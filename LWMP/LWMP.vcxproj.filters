@@ -2,44 +2,24 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="helpers.h" />
-    <ClInclude Include="Detours\include\detours.h">
-      <Filter>Detours\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Detours\include\detver.h">
-      <Filter>Detours\include</Filter>
-    </ClInclude>
-    <ClInclude Include="Detours\include\syelog.h">
-      <Filter>Detours\include</Filter>
-    </ClInclude>
+    <ClInclude Include="MessageInfo.h" />
+    <ClInclude Include="Messages.h" />
+    <ClInclude Include="Structures.h" />
+    <ClInclude Include="MessageManager.h" />
+    <ClInclude Include="Server.h" />
+    <ClInclude Include="Client.h" />
+    <ClInclude Include="WinSocket.h" />
+    <ClInclude Include="Socket.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="Detours">
-      <UniqueIdentifier>{85ba7ea6-f22a-4697-9548-62c26d3be628}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Detours\lib">
-      <UniqueIdentifier>{09dbd0a7-6765-4610-9214-041ab869c477}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Detours\include">
-      <UniqueIdentifier>{93708190-5906-4db7-b13b-dff27f636afb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Detours\lib\x86">
-      <UniqueIdentifier>{18983a62-1a77-4f06-b903-ba42ba572101}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="Detours\lib\x86\detours.lib">
-      <Filter>Detours\lib\x86</Filter>
-    </Library>
-    <Library Include="Detours\lib\x86\syelog.lib">
-      <Filter>Detours\lib\x86</Filter>
-    </Library>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Detours\lib\x86\detours.pdb">
-      <Filter>Detours\lib\x86</Filter>
-    </None>
+    <ClCompile Include="MessageInfo.cpp" />
+    <ClCompile Include="Messages.cpp" />
+    <ClCompile Include="MessageManager.cpp" />
+    <ClCompile Include="Mod.cpp" />
+    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="Client.cpp" />
+    <ClCompile Include="WinSocket.cpp" />
+    <ClCompile Include="Socket.cpp" />
   </ItemGroup>
 </Project>
