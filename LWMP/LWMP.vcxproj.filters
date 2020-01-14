@@ -1,25 +1,47 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="helpers.h" />
-    <ClInclude Include="MessageInfo.h" />
-    <ClInclude Include="Messages.h" />
-    <ClInclude Include="Structures.h" />
-    <ClInclude Include="MessageManager.h" />
-    <ClInclude Include="Server.h" />
+    <ClInclude Include="Helpers.h" />
+    <ClInclude Include="Functions.h" />
+    <ClInclude Include="Types.h" />
+    <ClInclude Include="Window.h" />
+    <ClInclude Include="MemoryPool.h" />
+    <ClInclude Include="Address.h" />
     <ClInclude Include="Client.h" />
-    <ClInclude Include="WinSocket.h" />
+    <ClInclude Include="Packet.h" />
+    <ClInclude Include="PacketHandler.h" />
+    <ClInclude Include="PacketReceiver.h" />
+    <ClInclude Include="PacketSender.h" />
+    <ClInclude Include="Server.h" />
     <ClInclude Include="Socket.h" />
+    <ClInclude Include="WinSocket.h" />
+    <ClInclude Include="MessageHandler.h" />
+    <ClInclude Include="MessageInfo.h" />
+    <ClInclude Include="MessageReceiver.h" />
+    <ClInclude Include="Messages.h" />
+    <ClInclude Include="MessageSender.h" />
+    <ClInclude Include="VarInt.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="Animations.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="MessageInfo.cpp" />
-    <ClCompile Include="Messages.cpp" />
-    <ClCompile Include="MessageManager.cpp" />
+    <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="Mod.cpp" />
-    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="MemoryPool.cpp" />
+    <ClCompile Include="Address.cpp" />
     <ClCompile Include="Client.cpp" />
-    <ClCompile Include="WinSocket.cpp" />
+    <ClCompile Include="Packet.cpp" />
+    <ClCompile Include="PacketHandler.cpp" />
+    <ClCompile Include="PacketReceiver.cpp" />
+    <ClCompile Include="PacketSender.cpp" />
+    <ClCompile Include="Server.cpp" />
     <ClCompile Include="Socket.cpp" />
+    <ClCompile Include="WinSocket.cpp" />
+    <ClCompile Include="MessageHandler.cpp" />
+    <ClCompile Include="MessageInfo.cpp" />
+    <ClCompile Include="MessageReceiver.cpp" />
+    <ClCompile Include="Messages.cpp" />
+    <ClCompile Include="MessageSender.cpp" />
   </ItemGroup>
 </Project>

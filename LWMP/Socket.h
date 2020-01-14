@@ -1,21 +1,16 @@
 ﻿#pragma once
 #include <WinSock2.h>
 #include <cstdint>
+#include "Address.h"
 
 class Socket
 {
 protected:
 	SOCKET udpSocket;
-	sockaddr_in udpSocketAddress;
-	size_t udpSocketAddressLength;
 
-	void initialize(uint32_t address, uint16_t port, int32_t type, int32_t protocol);
-	
 public:
-	Socket();
-	virtual bool send(uint8_t* data, uint32_t length) const;
-	virtual bool receive(uint8_t* data, uint32_t length) const;
-	virtual uint32_t getAddress() const;
-	virtual uint16_t getPort() const;
+	Socket(int32_t type, int32_t protocol);
+	virtual bool send(Address& address, uint8_t* data, size_t length) const;
+	virtual bool receive(Address& address, uint8_t* data, size_t length, size_t* receivedLength = NULL) const;
 	virtual ~Socket();
 };

@@ -2,11 +2,16 @@
 
 #define WIN32_LEAN_AND_MEAN
 
-#include <windows.h>
+#include <Windows.h>
 #include <detours.h>
 
+const HMODULE MODULE_HANDLE = GetModuleHandle(NULL);
+
+#define ASLR(address) \
+	((unsigned int)MODULE_HANDLE + (unsigned int)address - 0x400000)
+
 #define FUNCTION_PTR(returnType, callingConvention, function, location, ...) \
-	returnType (callingConvention *function)(__VA_ARGS__) = (returnType(callingConvention*)(__VA_ARGS__))(location)
+	returnType (callingConvention *function)(__VA_ARGS__) = (returnType(callingConvention*)(__VA_ARGS__))(location);
 
 #define PROC_ADDRESS(libraryName, procName) \
 	GetProcAddress(LoadLibrary(TEXT(libraryName)), procName)
@@ -24,27 +29,17 @@
 		DetourTransactionCommit(); \
 	}
 
-#define VTABLE_HOOK(returnType, callingConvention, className, functionName, ...) \
-	typedef returnType callingConvention functionName(className* This, __VA_ARGS__); \
-	functionName* original##functionName; \
-	returnType callingConvention implOf##functionName(className* This, __VA_ARGS__)
-
-#define INSTALL_VTABLE_HOOK(object, functionName, functionIndex) \
+#define UNINSTALL_HOOK(functionName) \
 	{ \
-		void** addr = &(*(void***)object)[functionIndex]; \
-		if (*addr != implOf##functionName) \
-		{ \
-			original##functionName = (functionName*)*addr; \
-			DWORD oldProtect; \
-			VirtualProtect(addr, sizeof(void*), PAGE_EXECUTE_READWRITE, &oldProtect); \
-			*addr = implOf##functionName; \
-			VirtualProtect(addr, sizeof(void*), oldProtect, NULL); \
-		} \
+		DetourTransactionBegin(); \
+		DetourUpdateThread(GetCurrentThread()); \
+		DetourDetach((void**)&original##functionName, implOf##functionName); \
+		DetourTransactionCommit(); \
 	}
 
 #define WRITE_MEMORY(location, ...) \
 	{ \
-		const char data[] = { __VA_ARGS__ }; \
+		const unsigned char data[] = { __VA_ARGS__ }; \
 		DWORD oldProtect; \
 		VirtualProtect((void*)location, sizeof(data), PAGE_EXECUTE_READWRITE, &oldProtect); \
 		memcpy((void*)location, data, sizeof(data)); \

@@ -83,25 +83,47 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="helpers.h" />
+    <ClInclude Include="Address.h" />
+    <ClInclude Include="Animations.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="MemoryPool.h" />
+    <ClInclude Include="Functions.h" />
+    <ClInclude Include="Helpers.h" />
+    <ClInclude Include="MessageHandler.h" />
     <ClInclude Include="MessageInfo.h" />
-    <ClInclude Include="MessageManager.h" />
+    <ClInclude Include="MessageReceiver.h" />
     <ClInclude Include="Messages.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="MessageSender.h" />
+    <ClInclude Include="Packet.h" />
+    <ClInclude Include="PacketHandler.h" />
+    <ClInclude Include="PacketReceiver.h" />
+    <ClInclude Include="PacketSender.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="Socket.h" />
-    <ClInclude Include="Structures.h" />
+    <ClInclude Include="Types.h" />
+    <ClInclude Include="VarInt.h" />
+    <ClInclude Include="Window.h" />
     <ClInclude Include="WinSocket.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Address.cpp" />
+    <ClCompile Include="MemoryPool.cpp" />
+    <ClCompile Include="DllMain.cpp" />
+    <ClCompile Include="MessageHandler.cpp" />
     <ClCompile Include="MessageInfo.cpp" />
-    <ClCompile Include="MessageManager.cpp" />
+    <ClCompile Include="MessageReceiver.cpp" />
     <ClCompile Include="Messages.cpp" />
+    <ClCompile Include="MessageSender.cpp" />
     <ClCompile Include="Mod.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="Packet.cpp" />
+    <ClCompile Include="PacketHandler.cpp" />
+    <ClCompile Include="PacketReceiver.cpp" />
+    <ClCompile Include="PacketSender.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="Socket.cpp" />
+    <ClCompile Include="Window.cpp" />
     <ClCompile Include="WinSocket.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
