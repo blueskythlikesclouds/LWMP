@@ -1,23 +1,28 @@
 ﻿#pragma once
-#include <unordered_map>
-#include <memory>
+
+#include "MemoryPool.h"
+#include "MessageData.h"
+#include "MessageRequest.h"
 #include "PacketHandler.h"
-#include "VarInt.h"
+
+#include <vector>
 
 class MessageHandler
 {
 protected:
-	varint_t requests;
-	varint_t flags;
-	std::unordered_map<uint32_t, std::shared_ptr<void>> messages;
+    std::vector<MessageRequest> requests;
+    std::vector<MessageData> messages;
 
-	PacketHandler* handler;
-	MemoryPool* pool;
-	
+    PacketHandler* handler;
+    MemoryPool* pool;
+
 public:
-	MessageHandler(PacketHandler* handler, MemoryPool* pool);
+    MessageHandler(PacketHandler* handler, MemoryPool* pool);
+    virtual ~MessageHandler();
+    
+    virtual void update() = 0;
+    virtual void clear();
 
-	virtual Address getAddress() const;
-	virtual void setAddress(Address& address);
-	virtual void clear();
+    virtual const std::vector<MessageRequest>& getRequests();
+    virtual const std::vector<MessageData>& getMessages();
 };

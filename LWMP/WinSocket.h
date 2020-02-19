@@ -3,6 +3,6 @@
 class WinSocket
 {
 public:
-	static bool startup();
-	static void cleanup();
+    static bool startup();
+    static void cleanup();
 };

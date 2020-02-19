@@ -1,57 +1,41 @@
-﻿#include "MessageReceiver.h"
+﻿#include "MessageInfoRegistry.h"
+#include "MessageReceiver.h"
+#include "MessageStream.h"
 
 MessageReceiver::MessageReceiver(PacketReceiver* receiver, MemoryPool* pool) : MessageHandler(receiver, pool)
 {
 }
 
-bool MessageReceiver::isRequested(const MessageInfo* messageInfo) const
+void MessageReceiver::update()
 {
-	return _bittest(&requests, messageInfo->id);
-}
+    PacketReceiver* receiver = (PacketReceiver*)handler;
+    std::unique_lock<std::mutex> lock = receiver->lock();
 
-bool MessageReceiver::contains(const MessageInfo* messageInfo) const
-{
-	return _bittest(&flags, messageInfo->id);
-}
+    this->clear();
 
-std::shared_ptr<void> MessageReceiver::get(const MessageInfo* messageInfo)
-{
-	return messages[messageInfo->id];
-}
+    for (auto& packet : receiver->getPackets())
+    {
+        if (packet.getLength() <= 4)
+            continue;
 
-Address MessageReceiver::receive()
-{
-	Packet packet;
-	if (!((PacketReceiver*)handler)->receive(packet))
-		return ANY_ADDRESS;
+        uint32_t* hash = (uint32_t*)packet.get().get();
+        uint8_t* bits = (uint8_t*)packet.get().get() + sizeof(uint32_t);
+        const size_t bitsLength = packet.getLength() - sizeof(uint32_t);
 
-	size_t offset = readVarInt(packet.data.get(), &requests);
-	offset += readVarInt(packet.data.get() + offset, &flags);
+        if (*hash != getMurmurHash(bits, bitsLength, 0))
+            continue;
 
-	messages.clear();
-	for (size_t i = 0; i < messageInfos.size(); i++)
-	{
-		if (!_bittest(&flags, i))
-			continue;
+        BitReader reader(bits, bitsLength);
 
-		MessageInfo* messageInfo = messageInfos[i];
-		std::shared_ptr<uint8_t[]> message = pool->rent<uint8_t[]>();
-		
-		for (auto& fieldInfo : messageInfo->fields)
-		{
-			if (fieldInfo.isVarInt)
-			{
-				offset += readVarInt(packet.data.get() + offset, (varint_t*)(message.get() + fieldInfo.offset));
-			}
-			else
-			{
-				memcpy(message.get() + fieldInfo.offset, packet.data.get() + offset, fieldInfo.byteSize);
-				offset += fieldInfo.byteSize;
-			}
-		}
-		
-		messages.insert({ messageInfo->id, message });
-	}
+        try {
+            for (size_t i = 0; i < MessageInfoRegistry::getCount(); i++)
+                MessageStream::readMessages(reader, MessageInfoRegistry::get(i), pool, requests, messages, packet.getAddress());
+        }
+        catch (std::exception& exception)
+        {
+            DEBUG_PRINT("%s\n", exception.what());
+        }
+    }
 
-	return packet.address;
+    receiver->clear();
 }

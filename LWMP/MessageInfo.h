@@ -1,41 +1,60 @@
 ﻿#pragma once
 
-#include <boost/preprocessor.hpp>
-#include <forward_list>
-#include <unordered_map>
+#include <utility>
 
-#define DEFINE_MESSAGE_INFO() \
-	enum { ID = __COUNTER__ }; \
-	static const MessageInfo INFO;
+enum class Variance
+{
+    INVARIANT,
+    UNSIGNED_VARIANT,
+    SIGNED_VARIANT
+};
 
-#define MESSAGE_INFO_FOR_EACH_MACRO(r, data, elem) \
-	{offsetof(data, elem), sizeof(data::elem), std::is_same<decltype(data::elem), varint_t>::value},
-
-#define DECLARE_MESSAGE_INFO(type, ...) \
-	const MessageInfo type::INFO \
-	( \
-		type::ID, { BOOST_PP_SEQ_FOR_EACH(MESSAGE_INFO_FOR_EACH_MACRO, type, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__)) }, sizeof(type) \
-	);
-
-extern std::unordered_map<uint32_t, struct MessageInfo*> messageInfos;
+template<typename T>
+class TVariance
+{
+public:
+    static constexpr Variance VALUE = 
+        std::is_same<T, VarUInt>::value ? Variance::UNSIGNED_VARIANT :
+        std::is_same<T, VarInt>::value ? Variance::SIGNED_VARIANT :
+        Variance::INVARIANT;
+};
 
 struct FieldInfo
 {
-	const off_t offset;
-	const size_t byteSize;
-	const bool isVarInt;
+    const size_t byteOffset;
+    const size_t byteSize;
+    const Variance variance;
 };
 
 struct MessageInfo
 {
-	const uint32_t id;
-	const std::forward_list<FieldInfo> fields;
-	const size_t byteSize;
-
-	size_t getMaxPackedLength() const;
-
-	MessageInfo(uint32_t id, std::initializer_list<FieldInfo> fields, size_t byteSize);
+    const std::string_view name;
+    const uint32_t id;
+    const FieldInfo* const fields;
+    const size_t fieldCount;
+    const size_t byteSize;
 };
 
-size_t getMaxPackedMessageSize();
-size_t getMaxMessageSize();
+#define DEFINE_MESSAGE_INFO() \
+    static constexpr uint32_t ID = __COUNTER__; \
+    static const MessageInfo INFO;
+
+#define DECLARE_FIELD_INFO(r, data, elem) \
+    { offsetof(data, elem), sizeof(data::elem), TVariance<decltype(data::elem)>::VALUE },
+
+#define DECLARE_MESSAGE_INFO(type, ...) \
+    static_assert(std::is_base_of<Message, type>::value, "Type does not inherit Message"); \
+    \
+    const FieldInfo fieldsOf##type[BOOST_PP_VARIADIC_SIZE(__VA_ARGS__)] = \
+    { \
+        BOOST_PP_SEQ_FOR_EACH(DECLARE_FIELD_INFO, type, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__)) \
+    }; \
+    const MessageInfo type::INFO = \
+    { \
+        DEBUG_NAMEOF_TYPE(type), \
+        type::ID, \
+        (const FieldInfo*)&fieldsOf##type, \
+        BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), \
+        sizeof(type) \
+    }; \
+    bool add##type = MessageInfoRegistry::add(&type::INFO); // 1000 IQ amirite?

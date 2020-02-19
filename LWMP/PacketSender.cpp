@@ -1,26 +1,20 @@
 ﻿#include "PacketSender.h"
 
-void PacketSender::threadImplementation()
+void PacketSender::update()
 {
-	while (!stop)
-	{
-		std::unique_lock<std::mutex> lock(mutex);
-		if (packets.empty())
-			continue;
+    std::unique_lock<std::mutex> lock(mutex);
 
-		Packet& packet = packets.front();
-		socket->send(address, packet.data.get(), packet.length);
+    for (auto& packet : packets)
+        socket->send(packet.get().get(), packet.getLength(), packet.getAddress());
 
-		packets.pop();
-	}
+    packets.clear();
 }
 
-PacketSender::PacketSender(Address& address, Socket* socket) : PacketHandler(address, socket)
+PacketSender::PacketSender(Socket* socket) : PacketHandler(socket)
 {
 }
 
-void PacketSender::send(Packet& packet)
+void PacketSender::send(std::shared_ptr<uint8_t[]> data, size_t length, const Address& address)
 {
-	std::unique_lock<std::mutex> lock(mutex);
-	packets.push(packet);
+    packets.emplace_back(std::move(data), length, address);
 }

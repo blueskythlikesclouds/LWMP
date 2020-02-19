@@ -1,57 +1,55 @@
-﻿#include "MessageSender.h"
+﻿#include "BitWriter.h"
+#include "MessageInfoRegistry.h"
+#include "Messages.h"
+#include "MessageSender.h"
+#include "MessageStream.h"
+
 #include <utility>
-#include "VarInt.h"
 
 MessageSender::MessageSender(PacketSender* sender, MemoryPool* pool) : MessageHandler(sender, pool)
 {
 }
 
-void MessageSender::request(const MessageInfo* messageInfo)
+void MessageSender::update()
 {
-	requests |= 1 << messageInfo->id;
+    PacketSender* sender = (PacketSender*)handler;
+    std::unique_lock<std::mutex> lock = sender->lock();
+
+    for (auto& address : addresses)
+    {
+        std::shared_ptr<uint8_t[]> data = pool->allocate<uint8_t[]>();
+
+        uint32_t* hash = (uint32_t*)data.get();
+        uint8_t* bits = data.get() + sizeof(uint32_t);
+
+        BitWriter writer(bits, pool->getArenaSize() - sizeof(uint32_t));
+        {
+            for (size_t i = 0; i < MessageInfoRegistry::getCount(); i++) 
+                MessageStream::writeMessages(writer, MessageInfoRegistry::get(i), requests, messages, address);
+        }
+        writer.flush();
+
+        *hash = getMurmurHash(bits, writer.getPosition(), 0);
+        sender->send(data, sizeof(uint32_t) + writer.getPosition(), address);
+    }
+
+    clear();
 }
 
-void MessageSender::add(const MessageInfo* messageInfo, std::shared_ptr<void> message)
+void MessageSender::clear()
 {
-	if (_bittest(&flags, messageInfo->id))
-		fprintf(stderr, "Same type of message was already added before\n");
-
-	flags |= 1 << messageInfo->id;
-	messages[messageInfo->id] = std::move(message);
+    MessageHandler::clear();
+    addresses.clear();
 }
 
-void MessageSender::send()
+void MessageSender::request(const MessageInfo* info, const Address& address)
 {
-	Packet packet;
-	packet.data = pool->rent<uint8_t[]>();
+    addresses.insert(address);
+    requests.emplace_back(info, address);
+}
 
-	size_t offset = writeVarInt(packet.data.get(), requests);
-	offset += writeVarInt(packet.data.get() + offset, flags);
-
-	for (size_t i = 0; i < messageInfos.size(); i++)
-	{
-		if (!_bittest(&flags, i))
-			continue;
-
-		MessageInfo* messageInfo = messageInfos[i];
-		std::shared_ptr<uint8_t[]> message = std::reinterpret_pointer_cast<uint8_t[]>(messages[i]);
-		
-		for (auto& fieldInfo : messageInfo->fields)
-		{
-			if (fieldInfo.isVarInt)
-			{
-				offset += writeVarInt(packet.data.get() + offset, *(varint_t*)(message.get() + fieldInfo.offset));
-			}
-			else
-			{
-				memcpy(packet.data.get() + offset, message.get() + fieldInfo.offset, fieldInfo.byteSize);
-				offset += fieldInfo.byteSize;
-			}
-		}
-	}
-	packet.length = offset;
-
-	((PacketSender*)handler)->send(packet);
-
-	clear();
+void MessageSender::send(const MessageInfo* info, std::shared_ptr<Message> message, const Address& address)
+{
+    addresses.insert(address);
+    messages.emplace_back(info, std::move(message), address);
 }

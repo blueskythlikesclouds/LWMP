@@ -2,46 +2,209 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="Helpers.h" />
-    <ClInclude Include="Functions.h" />
-    <ClInclude Include="Types.h" />
-    <ClInclude Include="Window.h" />
-    <ClInclude Include="MemoryPool.h" />
-    <ClInclude Include="Address.h" />
-    <ClInclude Include="Client.h" />
-    <ClInclude Include="Packet.h" />
-    <ClInclude Include="PacketHandler.h" />
-    <ClInclude Include="PacketReceiver.h" />
-    <ClInclude Include="PacketSender.h" />
-    <ClInclude Include="Server.h" />
-    <ClInclude Include="Socket.h" />
-    <ClInclude Include="WinSocket.h" />
-    <ClInclude Include="MessageHandler.h" />
-    <ClInclude Include="MessageInfo.h" />
-    <ClInclude Include="MessageReceiver.h" />
-    <ClInclude Include="Messages.h" />
-    <ClInclude Include="MessageSender.h" />
-    <ClInclude Include="VarInt.h" />
     <ClInclude Include="Math.h" />
-    <ClInclude Include="Animations.h" />
+    <ClInclude Include="Address.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="WinSocket.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Messages.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryPool.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>LostWorld</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>LostWorld</Filter>
+    </ClInclude>
+    <ClInclude Include="Functions.h">
+      <Filter>LostWorld</Filter>
+    </ClInclude>
+    <ClInclude Include="Animations.h">
+      <Filter>LostWorld</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageData.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="VarInt.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerData.h">
+      <Filter>Mod</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>Mod</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageRequest.h">
+      <Filter>Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet.h">
+      <Filter>Network\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketHandler.h">
+      <Filter>Network\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketReceiver.h">
+      <Filter>Network\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketSender.h">
+      <Filter>Network\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>Network\Sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>Network\Sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.h">
+      <Filter>Network\Sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageReceiver.h">
+      <Filter>Messages\Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageSender.h">
+      <Filter>Messages\Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageHandler.h">
+      <Filter>Messages\Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="BitReader.h">
+      <Filter>IO</Filter>
+    </ClInclude>
+    <ClInclude Include="BitWriter.h">
+      <Filter>IO</Filter>
+    </ClInclude>
+    <ClInclude Include="Sink.h">
+      <Filter>IO</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageInfoRegistry.h">
+      <Filter>Messages\Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageInfo.h">
+      <Filter>Messages\Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageStream.h">
+      <Filter>Messages\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h" />
+    <ClInclude Include="Pch.h" />
+    <ClInclude Include="MurmurHash.h">
+      <Filter>IO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
-    <ClCompile Include="Mod.cpp" />
-    <ClCompile Include="Window.cpp" />
-    <ClCompile Include="MemoryPool.cpp" />
-    <ClCompile Include="Address.cpp" />
-    <ClCompile Include="Client.cpp" />
-    <ClCompile Include="Packet.cpp" />
-    <ClCompile Include="PacketHandler.cpp" />
-    <ClCompile Include="PacketReceiver.cpp" />
-    <ClCompile Include="PacketSender.cpp" />
-    <ClCompile Include="Server.cpp" />
-    <ClCompile Include="Socket.cpp" />
-    <ClCompile Include="WinSocket.cpp" />
-    <ClCompile Include="MessageHandler.cpp" />
-    <ClCompile Include="MessageInfo.cpp" />
-    <ClCompile Include="MessageReceiver.cpp" />
-    <ClCompile Include="Messages.cpp" />
-    <ClCompile Include="MessageSender.cpp" />
+    <ClCompile Include="Address.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="WinSocket.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryPool.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Mod.cpp">
+      <Filter>Mod</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>LostWorld</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageData.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>Mod</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerData.cpp">
+      <Filter>Mod</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageRequest.cpp">
+      <Filter>Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet.cpp">
+      <Filter>Network\Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketHandler.cpp">
+      <Filter>Network\Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketReceiver.cpp">
+      <Filter>Network\Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketSender.cpp">
+      <Filter>Network\Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>Network\Sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>Network\Sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>Network\Sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageReceiver.cpp">
+      <Filter>Messages\Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageSender.cpp">
+      <Filter>Messages\Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageHandler.cpp">
+      <Filter>Messages\Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageInfos.cpp">
+      <Filter>Messages\Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageInfoRegistry.cpp">
+      <Filter>Messages\Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageInfo.cpp">
+      <Filter>Messages\Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageStream.cpp">
+      <Filter>Messages\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="Pch.cpp" />
+    <ClCompile Include="Animations.cpp">
+      <Filter>LostWorld</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Network">
+      <UniqueIdentifier>{e8f590e1-ead7-449c-bb63-ff65ee3b4c0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Messages">
+      <UniqueIdentifier>{97c7d6af-d2f0-46a6-95f5-8ff2a51d98a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LostWorld">
+      <UniqueIdentifier>{82aa57d7-2670-443e-87ac-65c394e4e5b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mod">
+      <UniqueIdentifier>{92ab5b4f-f8f3-4692-afdf-d5e62487c23e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Memory">
+      <UniqueIdentifier>{eedd40ed-1508-47cc-9299-f47c579cdb8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Sockets">
+      <UniqueIdentifier>{a3d1a96f-f2d4-4da2-b5da-cc6dc4a0b9a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Packets">
+      <UniqueIdentifier>{99667dc5-9954-4ce5-80d9-4277a457f0ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Messages\Handlers">
+      <UniqueIdentifier>{ff1fbf2d-ab60-4bd7-9698-f8b2826f1e15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IO">
+      <UniqueIdentifier>{d9b3888a-419d-4258-a134-f5d8abaa47b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Messages\Reflection">
+      <UniqueIdentifier>{2ed12c6d-c16d-4888-b6be-2612b7e6ae36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Messages\IO">
+      <UniqueIdentifier>{18f905a3-86e8-44cd-9534-52bd76d46738}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

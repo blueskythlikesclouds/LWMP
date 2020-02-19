@@ -15,7 +15,8 @@ typedef struct CStateGOC CStateGOC, *PCStateGOC;
 typedef struct CBlackBoard CBlackBoard, *PCBlackBoard;
 typedef struct SGroundInfo SGroundInfo, *PSGroundInfo;
 typedef struct CParameterRing CParameterRing, *PCParameterRing;
-typedef struct MoveArray_app__fnd__Handle_app__game__ColliShape_const MoveArray_app__fnd__Handle_app__game__ColliShape_const, *PMoveArray_app__fnd__Handle_app__game__ColliShape_const;
+typedef struct MoveArray_app__fnd__Handle_app__game__ColliShape_const
+    MoveArray_app__fnd__Handle_app__game__ColliShape_const, *PMoveArray_app__fnd__Handle_app__game__ColliShape_const;
 typedef struct PositionTracer PositionTracer, *PPositionTracer;
 typedef struct CPhysics CPhysics, *PCPhysics;
 typedef struct CCameraController CCameraController, *PCCameraController;
@@ -354,4 +355,3 @@ struct GOCReferenceHolderUnit
 struct CVisualUnit
 {
 };
-

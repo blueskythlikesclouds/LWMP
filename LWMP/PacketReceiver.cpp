@@ -1,33 +1,18 @@
 ﻿#include "PacketReceiver.h"
 
-void PacketReceiver::threadImplementation()
+void PacketReceiver::update()
 {
-	while (!stop)
-	{
-		std::shared_ptr<uint8_t[]> arena = pool->rent<uint8_t[]>();
-		size_t length;
+    std::shared_ptr<uint8_t[]> data = pool->allocate<uint8_t[]>();
+    size_t length = 0;
+    Address address = Address::ANY;
 
-		Address address = this->address;
-		if (!socket->receive(address, arena.get(), pool->getArenaSize(), &length))
-			continue;
+    if (!socket->receive(data.get(), pool->getArenaSize(), &address, &length) || !length)
+        return;
 
-		std::unique_lock<std::mutex> lock(mutex);
-		packets.push({ arena, length, address });
-	}
+    std::unique_lock<std::mutex> lock(mutex);
+    packets.emplace_back(data, length, address);
 }
 
-PacketReceiver::PacketReceiver(Address& address, Socket* socket, MemoryPool* pool) : PacketHandler(address, socket), pool(pool)
+PacketReceiver::PacketReceiver(Socket* socket, MemoryPool* pool) : PacketHandler(socket), pool(pool)
 {
-}
-
-bool PacketReceiver::receive(Packet& packet)
-{
-	std::unique_lock<std::mutex> lock(mutex);
-	if (packets.empty())
-		return false;
-
-	packet = packets.front();
-	
-	packets.pop();
-	return true;
 }

@@ -1,16 +1,15 @@
 ﻿#pragma once
-#include "PacketHandler.h"
+
 #include "MemoryPool.h"
+#include "PacketHandler.h"
 #include "Socket.h"
 
 class PacketReceiver : public PacketHandler
 {
-	MemoryPool* pool;
-	
-	void threadImplementation() override;
-	
-public:
-	PacketReceiver(Address& address, Socket* socket, MemoryPool* pool);
+    MemoryPool* pool;
 
-	bool receive(Packet& packet);
+    void update() override;
+
+public:
+    PacketReceiver(Socket* socket, MemoryPool* pool);
 };

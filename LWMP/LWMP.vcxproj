@@ -56,12 +56,16 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\;$(ProjectDir)Dependencies\Detours\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\;$(ProjectDir)Dependencies\bitreadercpp\include;$(ProjectDir)Dependencies\Detours\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>Pch.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>detours.lib;syelog.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)Dependencies\Detours\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>bitreadercpp.lib;detours.lib;syelog.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)Dependencies\bitreadercpp\lib\Debug;$(ProjectDir)Dependencies\Detours\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -72,34 +76,54 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\;$(ProjectDir)Dependencies\Detours\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\;$(ProjectDir)Dependencies\bitreadercpp\include;$(ProjectDir)Dependencies\Detours\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>Pch.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>detours.lib;syelog.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)Dependencies\Detours\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>bitreadercpp.lib;detours.lib;syelog.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)Dependencies\bitreadercpp\lib\Release;$(ProjectDir)Dependencies\Detours\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Address.h" />
     <ClInclude Include="Animations.h" />
+    <ClInclude Include="BitReader.h" />
+    <ClInclude Include="BitWriter.h" />
+    <ClInclude Include="Debug.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="Functions.h" />
     <ClInclude Include="Helpers.h" />
+    <ClInclude Include="MessageData.h" />
     <ClInclude Include="MessageHandler.h" />
     <ClInclude Include="MessageInfo.h" />
+    <ClInclude Include="MessageInfoRegistry.h" />
     <ClInclude Include="MessageReceiver.h" />
+    <ClInclude Include="MessageRequest.h" />
     <ClInclude Include="Messages.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="MessageSender.h" />
+    <ClInclude Include="MessageStream.h" />
+    <ClInclude Include="MurmurHash.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketHandler.h" />
     <ClInclude Include="PacketReceiver.h" />
     <ClInclude Include="PacketSender.h" />
+    <ClInclude Include="PlayerData.h" />
+    <ClInclude Include="Pch.h" />
     <ClInclude Include="Server.h" />
+    <ClInclude Include="Session.h" />
+    <ClInclude Include="Sink.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="VarInt.h" />
@@ -108,20 +132,31 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Address.cpp" />
+    <ClCompile Include="Animations.cpp" />
     <ClCompile Include="MemoryPool.cpp" />
     <ClCompile Include="DllMain.cpp" />
+    <ClCompile Include="MessageData.cpp" />
     <ClCompile Include="MessageHandler.cpp" />
     <ClCompile Include="MessageInfo.cpp" />
+    <ClCompile Include="MessageInfoRegistry.cpp" />
     <ClCompile Include="MessageReceiver.cpp" />
-    <ClCompile Include="Messages.cpp" />
+    <ClCompile Include="MessageRequest.cpp" />
+    <ClCompile Include="MessageInfos.cpp" />
     <ClCompile Include="MessageSender.cpp" />
+    <ClCompile Include="MessageStream.cpp" />
     <ClCompile Include="Mod.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="PacketHandler.cpp" />
     <ClCompile Include="PacketReceiver.cpp" />
     <ClCompile Include="PacketSender.cpp" />
+    <ClCompile Include="PlayerData.cpp" />
+    <ClCompile Include="Pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Server.cpp" />
+    <ClCompile Include="Session.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WinSocket.cpp" />

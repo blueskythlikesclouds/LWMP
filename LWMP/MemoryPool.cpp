@@ -1,56 +1,55 @@
 ﻿#include "MemoryPool.h"
 
-MemoryArena::MemoryArena(size_t arenaSize) : data((uint8_t*)_aligned_malloc(arenaSize, 16)), used(false)
+MemoryArena::MemoryArena(const size_t arenaSize) : data((uint8_t*)operator new(arenaSize)), used(false)
 {
 }
 
 MemoryArena::~MemoryArena()
 {
-	_aligned_free(data);
+    operator delete(data);
 }
 
-MemoryPool::MemoryPool(size_t arenaSize) : arenaSize(arenaSize)
+MemoryPool::MemoryPool(const size_t arenaSize) : arenaSize(arenaSize)
 {
 }
 
 MemoryPool::~MemoryPool()
 {
-	for (auto& item : arenas)
-		delete item;
+    for (auto& item : arenas)
+        delete item;
 }
 
-std::shared_ptr<void> MemoryPool::rent()
+std::shared_ptr<uint8_t[]> MemoryPool::allocate()
 {
-	std::unique_lock<std::mutex> lock(mutex);
+    std::unique_lock<std::mutex> lock(mutex);
 
-	MemoryArena* arena = NULL;
-	
-	for (auto& item : arenas)
-	{
-		if (item->used)
-			continue;
-		
-		arena = item;
-		break;
-	}
+    MemoryArena* arena = nullptr;
 
-	if (!arena)
-	{
-		arena = new MemoryArena(arenaSize);
-		arenas.push_back(arena);
-	}
-	
-	memset(arena->data, 0, arenaSize);
+    for (auto& item : arenas)
+    {
+        if (item->used)
+            continue;
 
-	arena->used = true;
-	return std::shared_ptr<void>(arena->data, [this, arena](void*)
-	{
-		std::unique_lock<std::mutex> lock(mutex);
-		arena->used = false;
-	});
+        arena = item;
+        break;
+    }
+
+    if (!arena)
+    {
+        arena = new MemoryArena(arenaSize);
+        arenas.push_back(arena);
+    }
+
+    memset(arena->data, 0, arenaSize);
+
+    arena->used = true;
+    return std::shared_ptr<uint8_t[]>(arena->data, [arena](uint8_t*)
+    {
+        arena->used = false;
+    });
 }
 
 size_t MemoryPool::getArenaSize() const
 {
-	return arenaSize;
+    return arenaSize;
 }

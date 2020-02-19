@@ -1,22 +1,34 @@
 ﻿#include "PacketHandler.h"
 
-PacketHandler::PacketHandler(Address& address, Socket* socket) : stop(false), address(address), socket(socket)
+PacketHandler::PacketHandler(Socket* socket) : socket(socket), stop(false)
 {
-	thread = std::thread(&PacketHandler::threadImplementation, this);
-}
-
-Address PacketHandler::getAddress() const
-{
-	return address;
-}
-
-void PacketHandler::setAddress(Address& address)
-{
-	this->address = address;
+    thread = std::thread([this]()
+    {
+        while (!stop) 
+        {
+            update();
+        }
+    });
 }
 
 PacketHandler::~PacketHandler()
 {
-	stop = true;
-	thread.join();
+    stop = true;
+    thread.join();
+}
+
+std::unique_lock<std::mutex> PacketHandler::lock()
+{
+    std::unique_lock<std::mutex> lock(mutex);
+    return std::move(lock);
+}
+
+const std::vector<Packet>& PacketHandler::getPackets()
+{
+    return packets;
+}
+
+void PacketHandler::clear()
+{
+    packets.clear();
 }

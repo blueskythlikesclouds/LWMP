@@ -1,55 +1,64 @@
 ﻿#pragma once
 
 #include "MessageInfo.h"
-#include "Types.h"
-#include "VarInt.h"
 
-struct MsgSetPosition
+struct Message
 {
-	Vector3 position;
-
-	DEFINE_MESSAGE_INFO()
+    uint8_t reserved;
 };
 
-struct MsgSetRotation
+struct MsgHandleConnectRequest : Message
 {
-	Quaternion rotation;
+    enum class Reply : uint8_t
+    {
+        ACCEPTED,
+        DENIED
+    };
 
-	DEFINE_MESSAGE_INFO()
+    Reply reply;
+
+    DEFINE_MESSAGE_INFO()
 };
 
-struct MsgSetBodyMode
+struct MsgSetPosition : Message
 {
-	varint_t bodyMode;
+    Vector3 position;
 
-	DEFINE_MESSAGE_INFO()
+    DEFINE_MESSAGE_INFO()
 };
 
-struct MsgSetAnimation
+struct MsgSetRotation : Message
 {
-	varint_t animationIndex;
+    Quaternion rotation;
 
-	DEFINE_MESSAGE_INFO()
+    DEFINE_MESSAGE_INFO()
 };
 
-struct MsgSetAnimationFrame
+struct MsgSetBodyMode : Message
 {
-	varint_t animationFrameUpper;
-	uint8_t animationFrameLower;
+    VarUInt bodyMode;
 
-	DEFINE_MESSAGE_INFO()
+    DEFINE_MESSAGE_INFO()
 };
 
-struct MsgSetRingCount
+struct MsgSetAnimation : Message
 {
-	varint_t ringCount;
+    VarUInt animationIndex;
 
-	DEFINE_MESSAGE_INFO()
+    DEFINE_MESSAGE_INFO()
 };
 
-struct MsgConnect
+struct MsgSetAnimationFrame : Message
 {
-	uint8_t padding;
-	
-	DEFINE_MESSAGE_INFO()
+    VarUInt animationFrameUpper;
+    uint8_t animationFrameLower;
+
+    DEFINE_MESSAGE_INFO()
+};
+
+struct MsgSetRingCount : Message
+{
+    VarUInt ringCount;
+
+    DEFINE_MESSAGE_INFO()
 };

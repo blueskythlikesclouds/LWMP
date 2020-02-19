@@ -1,26 +1,21 @@
-#include "Server.h"
-#include <cstdio>
-#include <thread>
-#include <ws2ipdef.h>
-#include <WS2tcpip.h>
-#include "WinSocket.h"
-#include "Client.h"
-#include "Window.h"
-#include "Packet.h"
-#include "MemoryPool.h"
-#include "PacketSender.h"
-#include "PacketReceiver.h"
-#include "Helpers.h"
-#include "Messages.h"
-#include "Functions.h"
-#include "MessageReceiver.h"
-#include "MessageSender.h"
-#include "Math.h"
 #include "Animations.h"
+#include "Client.h"
+#include "Functions.h"
+#include "MemoryPool.h"
+#include "MessageReceiver.h"
+#include "Messages.h"
+#include "MessageSender.h"
+#include "PacketReceiver.h"
+#include "PacketSender.h"
+#include "Server.h"
+#include "WinSocket.h"
+
+#include <thread>
 
 CPlayer* localPlayer;
 CPlayer* remotePlayer;
 
+Address address;
 bool isHost;
 MemoryPool* pool;
 MessageReceiver* receiver;
@@ -28,125 +23,153 @@ MessageSender* sender;
 
 HOOK(void, __fastcall, PlayerUpdate, ASLR(0x852820), CPlayer* This, void* Edx, void* a2)
 {
-	// Don't you just love shifted pointers?
-	CPlayer* player = (CPlayer*)((char*)This - 8);
+    // Don't you just love shifted pointers?
+    CPlayer* player = (CPlayer*)((char*)This - 8);
 
-	if (player != remotePlayer)
-		originalPlayerUpdate(This, Edx, a2);
+    if (player != remotePlayer)
+        originalPlayerUpdate(This, Edx, a2);
 
-	CStateGOC* stateGoc = (CStateGOC*)getComponent(&player->components, (void*)ASLR(0xDF77D8));
-	CVisualGOC* visualGoc = (CVisualGOC*)getComponent(&player->components, (void*)ASLR(0xE01360));
-	GOCAnimationScript* animationScript = visualGoc->currentVisual->gocReferenceHolder[0]->animationScript;
+    CStateGOC* stateGoc = (CStateGOC*)getComponent(&player->components, (void*)ASLR(0xDF77D8));
+    CVisualGOC* visualGoc = (CVisualGOC*)getComponent(&player->components, (void*)ASLR(0xE01360));
+    GOCAnimationScript* animationScript = visualGoc->currentVisual->gocReferenceHolder[0]->animationScript;
 
-	if (player == localPlayer)
-	{
-		if (!isHost)
-			sender->add(std::make_shared<MsgConnect>());
-		
-		auto msgSetPosition = pool->rent<MsgSetPosition>();
-		auto msgSetRotation = pool->rent<MsgSetRotation>();
-		auto msgSetBodyMode = pool->rent<MsgSetBodyMode>();
-		auto msgSetAnimation = pool->rent<MsgSetAnimation>();
-		auto msgSetAnimationFrame = pool->rent<MsgSetAnimationFrame>();
-		auto msgSetRingCount = pool->rent<MsgSetRingCount>();
+    if (player == localPlayer)
+    {
+        if (!isHost)
+            sender->send(pool->allocate<MsgHandleConnectRequest>(), address);
 
-		msgSetPosition->position = getTranslation(visualGoc->visualLocaterManager->matrix);
-		msgSetRotation->rotation = getQuaternion(visualGoc->visualLocaterManager->matrix);
-		msgSetBodyMode->bodyMode = player->blackBoard->bodyMode;
-		float animationFrame = (float)getAnimationFrame(animationScript);
-		msgSetAnimationFrame->animationFrameUpper = (varint_t)animationFrame;
-		msgSetAnimationFrame->animationFrameLower = (uint8_t)((animationFrame - (int32_t)animationFrame) * 255.0f);
-		msgSetAnimation->animationIndex = ANIMATION_TO_INDEX_MAP[getCurrentAnimationName(animationScript->characterAnimationSingle)];
-		msgSetRingCount->ringCount = player->blackBoard->ringParameter->ringCount;
-		
-		sender->add(msgSetPosition);
-		sender->add(msgSetRotation);
-		sender->add(msgSetBodyMode);
-		sender->add(msgSetAnimation);
-		sender->add(msgSetAnimationFrame);
-		sender->add(msgSetRingCount);
-		
-		sender->send();
-	}
+        auto msgSetPosition = pool->allocate<MsgSetPosition>();
+        auto msgSetRotation = pool->allocate<MsgSetRotation>();
+        auto msgSetBodyMode = pool->allocate<MsgSetBodyMode>();
+        auto msgSetAnimation = pool->allocate<MsgSetAnimation>();
+        auto msgSetAnimationFrame = pool->allocate<MsgSetAnimationFrame>();
+        auto msgSetRingCount = pool->allocate<MsgSetRingCount>();
 
-	else if (player == remotePlayer)
-	{
-		Address address = receiver->receive();
-		
-		void* collectorComponent = getGameObjectComponent(player, (char*)ASLR(0xDF7DF4));
-		if (collectorComponent)
-			updateChangeRequest(collectorComponent);
+        msgSetPosition->position = getTranslation(visualGoc->visualLocaterManager->matrix);
+        msgSetRotation->rotation = getQuaternion(visualGoc->visualLocaterManager->matrix);
+        msgSetBodyMode->bodyMode = player->blackBoard->bodyMode;
+        float animationFrame = (float)getAnimationFrame(animationScript);
+        msgSetAnimationFrame->animationFrameUpper = (VarInt)animationFrame;
+        msgSetAnimationFrame->animationFrameLower = (uint8_t)((animationFrame - (int32_t)animationFrame) * 255.0f);
+        msgSetAnimation->animationIndex = ANIMATION_TO_INDEX_MAP.at(getCurrentAnimationName(animationScript->characterAnimationSingle));
+        msgSetRingCount->ringCount = player->blackBoard->ringParameter->ringCount;
 
-		if (isHost && receiver->contains<MsgConnect>()) 
-			sender->setAddress(address);
+        sender->send(msgSetPosition, address);
+        sender->send(msgSetRotation, address);
+        sender->send(msgSetBodyMode, address);
+        sender->send(msgSetAnimation, address);
+        sender->send(msgSetAnimationFrame, address);
+        sender->send(msgSetRingCount, address);
+        sender->update();
+    }
 
-		if (receiver->contains<MsgSetRotation>())
-			player->physics->rotation = receiver->get<MsgSetRotation>()->rotation;
+    else if (player == remotePlayer)
+    {
+        receiver->update();
 
-		if (receiver->contains<MsgSetPosition>())
-			setPosition(player->physics, receiver->get<MsgSetPosition>()->position);
+        void* collectorComponent = getGameObjectComponent(player, (char*)ASLR(0xDF7DF4));
+        if (collectorComponent)
+            updateChangeRequest(collectorComponent);
 
-		if (receiver->contains<MsgSetBodyMode>())
-		{
-			auto msgSetBodyMode = receiver->get<MsgSetBodyMode>();
-			if (player->blackBoard->bodyMode != msgSetBodyMode->bodyMode)
-				changeVisual(stateGoc, msgSetBodyMode->bodyMode);
-		}
+        Vector3 position = player->physics->position;
+        Quaternion rotation = player->physics->rotation;
+        
+        for (auto& messageData : receiver->getMessages())
+        {
+            switch (messageData.getId())
+            {
+            case MsgHandleConnectRequest::ID:
+                if (isHost) 
+                {
+                    address = messageData.getAddress();
+                }
+                
+                break;
 
-		if (receiver->contains<MsgSetAnimation>())
-		{
-			auto msgSetAnimation = receiver->get<MsgSetAnimation>();
-			char* animationName = (char*)ANIMATIONS[min(msgSetAnimation->animationIndex, _countof(ANIMATIONS) - 1)];
-			if (!isCurrentAnimation(animationScript->characterAnimationSingle, animationName))
-				changeAnimation(animationScript->characterAnimationSingle, animationName);
-		}
+            case MsgSetPosition::ID:
+                position = messageData.get<MsgSetPosition>()->position;
+                break;
 
-		if (receiver->contains<MsgSetAnimationFrame>())
-		{
-			auto msgSetAnimationFrame = receiver->get<MsgSetAnimationFrame>();
-			setAnimationFrame(animationScript->characterAnimationSingle, (float)msgSetAnimationFrame->animationFrameUpper + msgSetAnimationFrame->animationFrameLower / 255.0f);
-		}
+            case MsgSetRotation::ID:
+                rotation = messageData.get<MsgSetRotation>()->rotation;
+                break;
 
-		if (receiver->contains<MsgSetRingCount>())
-			player->blackBoard->ringParameter->ringCount = receiver->get<MsgSetRingCount>()->ringCount;
+            case MsgSetBodyMode::ID:
+            {
+                VarInt bodyMode = messageData.get<MsgSetBodyMode>()->bodyMode;
+                if (player->blackBoard->bodyMode != bodyMode)
+                    changeVisual(stateGoc, bodyMode);
+                    
+                break;
+            }
 
-		visualGocUpdate(visualGoc, *(int*)a2);
-		updatePlayerInformation(player);
-		updateHistoryData(player->physics, *(int*)a2);
-	}
+            case MsgSetAnimation::ID:
+            {
+                const char* animationName = ANIMATIONS[min((size_t)messageData.get<MsgSetAnimation>()->animationIndex, ANIMATION_COUNT - 1)];
+                if (!isCurrentAnimation(animationScript->characterAnimationSingle, animationName))
+                    changeAnimation(animationScript->characterAnimationSingle, animationName);
+                    
+                break;
+            }
+                    
+            case MsgSetAnimationFrame::ID:
+            {
+                const auto msgSetAnimationFrame = messageData.get<MsgSetAnimationFrame>();
+                    
+                setAnimationFrame(animationScript->characterAnimationSingle, 
+                    (float)msgSetAnimationFrame->animationFrameUpper + msgSetAnimationFrame->animationFrameLower / 255.0f);
+                break;
+            }
+
+            case MsgSetRingCount::ID:
+                break;
+                
+            default:
+                break;
+            }
+        }
+
+        player->physics->rotation = rotation;
+        setPosition(player->physics, position);
+
+        visualGocUpdate(visualGoc, *(int*)a2);
+        updatePlayerInformation(player);
+        updateHistoryData(player->physics, *(int*)a2);
+    }
 }
 
 HOOK(CPlayer*, __cdecl, CreatePlayer, ASLR(0x85A8F0), void* gameDocument, void* scInfo)
 {
-	CPlayer* player = originalCreatePlayer(gameDocument, scInfo);
+    CPlayer* player = originalCreatePlayer(gameDocument, scInfo);
 
-	if (!localPlayer)
-		localPlayer = player;
+    if (!localPlayer)
+        localPlayer = player;
 
-	else if (!remotePlayer)
-		remotePlayer = player;
+    else if (!remotePlayer)
+        remotePlayer = player;
 
-	return player;
+    return player;
 }
 
 extern "C" void __declspec(dllexport) __cdecl Init(const void* data)
 {
-	if (!WinSocket::startup())
-	{
-		fprintf(stderr, "Init(): WinSocket::startup() failed\n");
-		return;
-	}
+    if (!WinSocket::startup())
+    {
+        DEBUG_PRINT("Init(): WinSocket::startup() failed\n");
+        return;
+    }
 
-	INSTALL_HOOK(CreatePlayer);
-	INSTALL_HOOK(PlayerUpdate);
+    INSTALL_HOOK(CreatePlayer);
+    INSTALL_HOOK(PlayerUpdate);
 
-	pool = new MemoryPool(1024);
+    pool = new MemoryPool(1024);
 
-	isHost = MessageBox(NULL, "Are you the host?", NULL, MB_YESNO) == IDYES;
-	Address address = isHost ? Address("sajid's ip", 56253) : Address("my ip", 42069);
-	Socket* socket = isHost ? (Socket*)new Server(42069) : new Client();
-	PacketReceiver* pReceiver = new PacketReceiver(address, socket, pool);
-	PacketSender* pSender = new PacketSender(address, socket);
-	receiver = new MessageReceiver(pReceiver, pool);
-	sender = new MessageSender(pSender, pool);
+    isHost = MessageBox(nullptr, "Are you the host?", nullptr, MB_YESNO) == IDYES;
+    if (!isHost)
+        address = Address("ip", 42069);
+    Socket* socket = isHost ? static_cast<Socket*>(new Server(42069)) : new Client();
+    PacketReceiver* pReceiver = new PacketReceiver(socket, pool);
+    PacketSender* pSender = new PacketSender(socket);
+    receiver = new MessageReceiver(pReceiver, pool);
+    sender = new MessageSender(pSender, pool);
 }

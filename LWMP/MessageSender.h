@@ -1,27 +1,33 @@
 ﻿#pragma once
+
 #include "MessageHandler.h"
 #include "MessageInfo.h"
 #include "PacketSender.h"
 
+#include <set>
+
 class MessageSender : public MessageHandler
 {
+    std::set<Address> addresses;
+
 public:
-	MessageSender(PacketSender* sender, MemoryPool* pool);
-	
-	void request(const MessageInfo* messageInfo);
-	void add(const MessageInfo* messageInfo, std::shared_ptr<void> message);
+    MessageSender(PacketSender* sender, MemoryPool* pool);
 
-	template<typename T>
-	void request()
-	{
-		request(&T::INFO);
-	}
+    void update() override;
+    void clear() override;
+    
+    void request(const MessageInfo* info, const Address& address);
+    void send(const MessageInfo* info, std::shared_ptr<Message> message, const Address& address);
 
-	template<typename T>
-	void add(std::shared_ptr<T> message)
-	{
-		add(&T::INFO, std::reinterpret_pointer_cast<void>(message));
-	}
+    template <typename T>
+    void request(const Address& address)
+    {
+        request(&T::INFO, address);
+    }
 
-	void send();
+    template <typename T>
+    void send(std::shared_ptr<T> message, const Address& address)
+    {
+        send(&T::INFO, std::reinterpret_pointer_cast<Message>(message), address);
+    }
 };

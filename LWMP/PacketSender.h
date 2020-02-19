@@ -1,14 +1,14 @@
 ﻿#pragma once
+
 #include "PacketHandler.h"
 #include "Socket.h"
-#include "MemoryPool.h"
 
 class PacketSender : public PacketHandler
 {
-	void threadImplementation() override;
-	
-public:
-	PacketSender(Address& address, Socket* socket);
+    void update() override;
 
-	void send(Packet& packet);
+public:
+    PacketSender(Socket* socket);
+
+    void send(std::shared_ptr<uint8_t[]> data, size_t length, const Address& address);
 };

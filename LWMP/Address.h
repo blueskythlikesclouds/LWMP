@@ -1,21 +1,46 @@
 ﻿#pragma once
-#include <cstdint>
 
-#pragma pack(push, 1)
+#include <cstddef>
+#include <typeindex>
 
 struct Address
 {
-	uint32_t address{};
-	uint16_t port{};
+    union
+    {
+        uint32_t address;
+        uint8_t numbers[4];
+    };
+    uint16_t port;
 
-	Address();
-	Address(uint32_t address, uint16_t port);
-	Address(const char* address, uint16_t port);
+    static const Address ANY;
 
-	static struct Address fromSocketAddress(struct sockaddr_in& socketAddress);
-	struct sockaddr_in toSocketAddress() const;
+    Address();
+    Address(uint32_t address, uint16_t port);
+    Address(const char* address, uint16_t port);
+    Address(uint16_t port);
+
+    bool operator==(const Address& right) const;
+    bool operator!=(const Address& right) const;
+    bool operator<(const Address& right) const;
+    bool operator<=(const Address& right) const;
+    bool operator>(const Address& right) const;
+    bool operator>=(const Address& right) const;
+
+    struct sockaddr_in toNative() const;
+    static struct Address fromNative(struct sockaddr_in& socketAddress);
+
+    size_t getHash() const;
+
 };
 
-#pragma pack(pop)
-
-const Address ANY_ADDRESS((uint32_t)0, (uint16_t)0);
+namespace std
+{
+    template<>
+    struct hash<Address>
+    {
+        size_t operator()(const Address& address) const noexcept
+        {
+            return address.getHash();
+        }
+    };
+}

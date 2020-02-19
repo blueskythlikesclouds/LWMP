@@ -1,13 +1,11 @@
-﻿#include "window.h"
-#include "Functions.h"
-#include "helpers.h"
-#include <cstdio>
+﻿#include "Functions.h"
+#include "Window.h"
 
 enum WindowState
 {
-	UNINITIALIZED,
-	VISIBLE,
-	HIDDEN
+    UNINITIALIZED,
+    VISIBLE,
+    HIDDEN
 };
 
 void** const DISPLAY_SWITCH = (void**)ASLR(0xFD7358);
@@ -23,92 +21,92 @@ float* const ELAPSED_TIME = (float*)ASLR(0xFEFF04);
 
 void Window::appear(const wchar_t* text)
 {
-	appear(text, NULL, NULL);
+    appear(text, nullptr, nullptr);
 }
 
 void Window::appear(const wchar_t* text, float time)
 {
-	appear(text, NULL, &time);
+    appear(text, nullptr, &time);
 }
 
 void Window::appear(const wchar_t* text, Buttons buttons)
 {
-	appear(text, &buttons, NULL);
+    appear(text, &buttons, nullptr);
 }
 
-void Window::appear(const wchar_t* text, Buttons* buttons, float* time)
+void Window::appear(const wchar_t* text, Buttons* buttons, const float* time)
 {
-	struct
-	{
-		float field0;
-		float field4;
-		int field8;
-		int field10;
-		int field14;
-		int field18;
-		int field1C;
-		int field20;
-		int field24;
-	} sParam;
+    struct
+    {
+        float field0;
+        float field4;
+        int field8;
+        int field10;
+        int field14;
+        int field18;
+        int field1C;
+        int field20;
+        int field24;
+    } sParam;
 
-	memset(&sParam, 0, sizeof(sParam));
+    memset(&sParam, 0, sizeof(sParam));
 
-	sParam.field0 = -320.0f;
-	sParam.field4 = -320.0f;
-	sParam.field1C = 0x104;
-	sParam.field20 = 3;
-	sParam.field24 = buttons ? (*buttons == Buttons::OK ? 1 : *buttons == Buttons::YES_NO ? 3 : 0) : 0;
+    sParam.field0 = -320.0f;
+    sParam.field4 = -320.0f;
+    sParam.field1C = 0x104;
+    sParam.field20 = 3;
+    sParam.field24 = buttons ? (*buttons == Buttons::OK ? 1 : *buttons == Buttons::YES_NO ? 3 : 0) : 0;
 
-	*GENERAL_WINDOW = generalWindowCtor(gameObjectNew(0x15C), &sParam);
-	setText(text);
+    *GENERAL_WINDOW = generalWindowCtor(gameObjectNew(0x15C), &sParam);
+    setText(text);
 
-	gameDocumentAddObject(*GAME_DOCUMENT, *GENERAL_WINDOW);
+    gameDocumentAddObject(*GAME_DOCUMENT, *GENERAL_WINDOW);
 
-	*FEFEFD = 0;
-	*IS_GLOBAL = true;
-	*WAIT_FOR_INPUT = !time;
-	*SELECTED_BUTTON = 0;
-	*FEFEE8 = 1;
-	*ELAPSED_TIME = 1.0f - (time ? *time : 1.0f);
-	*STATE = VISIBLE;
+    *FEFEFD = 0;
+    *IS_GLOBAL = true;
+    *WAIT_FOR_INPUT = !time;
+    *SELECTED_BUTTON = 0;
+    *FEFEE8 = 1;
+    *ELAPSED_TIME = 1.0f - (time ? *time : 1.0f);
+    *STATE = VISIBLE;
 }
 
 Window::YesNoResult Window::getYesNoResult()
 {
-	return !*GENERAL_WINDOW || *STATE == 1
-		       ? YesNoResult::NONE
-		       : generalWindowIsYesButtonPressed()
-		       ? YesNoResult::YES
-		       : generalWindowIsNoButtonPressed()
-		       ? YesNoResult::NO
-		       : YesNoResult::NONE;
+    return !*GENERAL_WINDOW || *STATE == 1
+               ? YesNoResult::NONE
+               : generalWindowIsYesButtonPressed()
+               ? YesNoResult::YES
+               : generalWindowIsNoButtonPressed()
+               ? YesNoResult::NO
+               : YesNoResult::NONE;
 }
 
 bool Window::isVisible()
 {
-	return *GENERAL_WINDOW && *STATE == 1;
+    return *GENERAL_WINDOW && *STATE == 1;
 }
 
 void Window::setText(const wchar_t* text)
 {
-	if (!*GENERAL_WINDOW)
-		return;
-	
-	struct
-	{
-		const char* key;
-		const wchar_t* text;
-		const int gap8;
-		const int gapC;
-	} converseData = { "LWMP", text, 0, 0 };
-	
-	generalWindowSetText(*GENERAL_WINDOW, &converseData);
+    if (!*GENERAL_WINDOW)
+        return;
+
+    struct
+    {
+        const char* key;
+        const wchar_t* text;
+        const int gap8;
+        const int gapC;
+    } converseData = {"LWMP", text, 0, 0};
+
+    generalWindowSetText(*GENERAL_WINDOW, &converseData);
 }
 
 void Window::disappear()
 {
-	if (!*GENERAL_WINDOW)
-		return;
+    if (!*GENERAL_WINDOW)
+        return;
 
-	generalWindowDisappear();
+    generalWindowDisappear();
 }
