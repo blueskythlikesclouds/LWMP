@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <unordered_map>
-
 extern const char* const ANIMATIONS[];
 extern const size_t ANIMATION_COUNT;
 

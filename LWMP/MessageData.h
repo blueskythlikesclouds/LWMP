@@ -1,9 +1,7 @@
 ﻿#pragma once
 
-#include "Address.h"
-#include "Messages.h"
-
-#include <memory>
+struct Message;
+struct MessageInfo;
 
 class MessageData
 {

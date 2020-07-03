@@ -9,6 +9,6 @@ class Server : public Socket
 public:
     Server(uint16_t port);
 
-    Type getType() const override;
+    SocketType getType() const override;
     uint16_t getPort() const;
 };

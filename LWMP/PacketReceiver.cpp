@@ -1,4 +1,6 @@
-﻿#include "PacketReceiver.h"
+﻿#include "MemoryPool.h"
+#include "PacketReceiver.h"
+#include "Socket.h"
 
 void PacketReceiver::update()
 {
@@ -13,6 +15,6 @@ void PacketReceiver::update()
     packets.emplace_back(data, length, address);
 }
 
-PacketReceiver::PacketReceiver(Socket* socket, MemoryPool* pool) : PacketHandler(socket), pool(pool)
+PacketReceiver::PacketReceiver(const std::shared_ptr<Socket>& socket, const std::shared_ptr<MemoryPool>& pool) : PacketHandler(socket), pool(pool)
 {
 }

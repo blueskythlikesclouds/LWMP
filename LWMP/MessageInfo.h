@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <utility>
-
 enum class Variance
 {
     INVARIANT,
@@ -51,7 +49,7 @@ struct MessageInfo
     }; \
     const MessageInfo type::INFO = \
     { \
-        DEBUG_NAMEOF_TYPE(type), \
+        #type, \
         type::ID, \
         (const FieldInfo*)&fieldsOf##type, \
         BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), \

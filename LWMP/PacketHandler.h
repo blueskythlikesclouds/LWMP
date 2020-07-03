@@ -1,16 +1,13 @@
 ﻿#pragma once
 
 #include "Packet.h"
-#include "Socket.h"
 
-#include <atomic>
-#include <mutex>
-#include <vector>
+class Socket;
 
 class PacketHandler
 {
 protected:
-    Socket* socket;
+    std::shared_ptr<Socket> socket;
 
     std::vector<Packet> packets;
 
@@ -22,7 +19,7 @@ protected:
     virtual void update() = 0;
 
 public:
-    PacketHandler(Socket* socket);
+    PacketHandler(const std::shared_ptr<Socket>& socket);
     virtual ~PacketHandler();
     
     virtual std::unique_lock<std::mutex> lock();

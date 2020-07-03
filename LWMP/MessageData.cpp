@@ -1,4 +1,5 @@
 ﻿#include "MessageData.h"
+#include "MessageInfo.h"
 
 MessageData::MessageData(const MessageInfo* info, std::shared_ptr<Message> message, const Address& address)
     : info(info), message(std::move(message)), address(address)

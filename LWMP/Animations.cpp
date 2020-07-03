@@ -352,5 +352,5 @@ const std::unordered_map<std::string_view, uint32_t> ANIMATION_TO_INDEX_MAP = []
     for (size_t i = 0; i < ANIMATION_COUNT; i++)
         map[ANIMATIONS[i]] = i;
 
-    return map;
+    return std::move(map);
 }();

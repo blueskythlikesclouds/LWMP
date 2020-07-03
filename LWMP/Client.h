@@ -7,5 +7,5 @@ class Client : public Socket
 public:
     Client();
 
-    Type getType() const override;
+    SocketType getType() const override;
 };

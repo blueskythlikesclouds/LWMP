@@ -1,11 +1,10 @@
 ﻿#pragma once
 
-#include "MemoryPool.h"
 #include "MessageData.h"
 #include "MessageRequest.h"
-#include "PacketHandler.h"
 
-#include <vector>
+class PacketHandler;
+class MemoryPool;
 
 class MessageHandler
 {
@@ -13,11 +12,11 @@ protected:
     std::vector<MessageRequest> requests;
     std::vector<MessageData> messages;
 
-    PacketHandler* handler;
-    MemoryPool* pool;
+    std::shared_ptr<PacketHandler> handler;
+    std::shared_ptr<MemoryPool> pool;
 
 public:
-    MessageHandler(PacketHandler* handler, MemoryPool* pool);
+    MessageHandler(const std::shared_ptr<PacketHandler>& handler, const std::shared_ptr<MemoryPool>& pool);
     virtual ~MessageHandler();
     
     virtual void update() = 0;

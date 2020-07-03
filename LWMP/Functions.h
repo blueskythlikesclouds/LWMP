@@ -2,13 +2,10 @@
 
 void** const GAME_DOCUMENT = (void**)ASLR(0xFEFEF4);
 
-static FUNCTION_PTR(void*, __thiscall, changeAnimation, ASLR(0x413C20), CharactorAnimationSingle* This,
-                    const char* animationName);
-static FUNCTION_PTR(void*, __thiscall, setAnimationFrame, ASLR(0x414550), CharactorAnimationSingle* This,
-                    float animationSpeed);
+static FUNCTION_PTR(void*, __thiscall, changeAnimation, ASLR(0x413C20), CharactorAnimationSingle* This, const char* animationName);
+static FUNCTION_PTR(void*, __thiscall, setAnimationFrame, ASLR(0x414550), CharactorAnimationSingle* This, float animationSpeed);
 static FUNCTION_PTR(const char*, __thiscall, getCurrentAnimationName, ASLR(0x414680), CharactorAnimationSingle* This);
-static FUNCTION_PTR(bool, __thiscall, isCurrentAnimation, ASLR(0x414700), CharactorAnimationSingle* This,
-                    const char* animationName);
+static FUNCTION_PTR(bool, __thiscall, isCurrentAnimation, ASLR(0x414700), CharactorAnimationSingle* This, const char* animationName);
 static FUNCTION_PTR(void*, __cdecl, gameObjectNew, ASLR(0x49CAD0), int byteSize);
 static FUNCTION_PTR(void*, __thiscall, getGameObjectComponent, ASLR(0x49D430), void* This, char* componentName);
 static FUNCTION_PTR(double, __thiscall, getAnimationFrame, ASLR(0x4B3360), GOCAnimationScript* This);
@@ -26,8 +23,7 @@ static FUNCTION_PTR(void*, __thiscall, updateAfterMove, ASLR(0x00855B10), CPhysi
 static FUNCTION_PTR(void*, __thiscall, changeVisual, ASLR(0x85C5F0), CStateGOC* This, int bodyMode);
 static FUNCTION_PTR(void*, __thiscall, visualGocUpdate, ASLR(0x8EFBC0), CVisualGOC* This, int a2);
 static FUNCTION_PTR(void*, __thiscall, updateChangeRequest, ASLR(0x8F2E00), void* This);
-static FUNCTION_PTR(void*, __thiscall, changeLocator, ASLR(0x8F5090), CVisualLocaterManager* This, const char* name,
-                    float a2, int a3);
+static FUNCTION_PTR(void*, __thiscall, changeLocator, ASLR(0x8F5090), CVisualLocaterManager* This, const char* name, float a2, int a3);
 static FUNCTION_PTR(void*, __thiscall, setLocalTranslationAndRotation, ASLR(0x4944A0), GOCTransform* This, Vector3& position, Quaternion& rotation);
 static FUNCTION_PTR(void*, __thiscall, gameDocumentAddObject, ASLR(0x90B3C0), void* This, void* object);
 static FUNCTION_PTR(int, __cdecl, getPlayerNo, ASLR(0x73DDD0), void* gameDocument, int id);
@@ -40,5 +36,4 @@ static FUNCTION_PTR(bool, __cdecl, generalWindowIsYesButtonPressed, ASLR(0x95E43
 static FUNCTION_PTR(bool, __cdecl, generalWindowIsNoButtonPressed, ASLR(0x95E470));
 static FUNCTION_PTR(bool, __cdecl, generalWindowIsMiiverseButtonPressed, ASLR(0x95E4B0));
 static FUNCTION_PTR(void*, __cdecl, getSteamAvatar, ASLR(0x525250), int quality, long long steamId);
-static FUNCTION_PTR(void, __cdecl, resetPosition, ASLR(0x8D85F0), CStateGOC* This, Vector3& position,
-                    Quaternion& rotation);
+static FUNCTION_PTR(void, __cdecl, resetPosition, ASLR(0x8D85F0), CStateGOC* This, Vector3& position, Quaternion& rotation);

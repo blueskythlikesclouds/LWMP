@@ -1,7 +1,7 @@
 ﻿#include "Packet.h"
 
-Packet::Packet(std::shared_ptr<uint8_t[]> data, const size_t length, const Address& address)
-    : data(std::move(data)), length(length), address(address)
+Packet::Packet(const std::shared_ptr<uint8_t[]>& data, const size_t length, const Address& address)
+    : data(data), length(length), address(address)
 {
 }
 

@@ -50,8 +50,8 @@ struct MsgSetAnimation : Message
 
 struct MsgSetAnimationFrame : Message
 {
-    VarUInt animationFrameUpper;
-    uint8_t animationFrameLower;
+    VarUInt animationFrameIntegral;
+    uint8_t animationFrameFractional;
 
     DEFINE_MESSAGE_INFO()
 };

@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-#include "MessageInfo.h"
-#include <vector>
+struct MessageInfo;
 
 class MessageInfoRegistry
 {

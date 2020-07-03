@@ -1,4 +1,6 @@
-﻿#include "PacketSender.h"
+﻿#include "Packet.h"
+#include "PacketSender.h"
+#include "Socket.h"
 
 void PacketSender::update()
 {
@@ -10,11 +12,11 @@ void PacketSender::update()
     packets.clear();
 }
 
-PacketSender::PacketSender(Socket* socket) : PacketHandler(socket)
+PacketSender::PacketSender(const std::shared_ptr<Socket>& socket) : PacketHandler(socket)
 {
 }
 
-void PacketSender::send(std::shared_ptr<uint8_t[]> data, size_t length, const Address& address)
+void PacketSender::send(const std::shared_ptr<uint8_t[]>& data, size_t length, const Address& address)
 {
-    packets.emplace_back(std::move(data), length, address);
+    packets.emplace_back(data, length, address);
 }

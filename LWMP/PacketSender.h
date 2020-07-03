@@ -1,14 +1,13 @@
 ﻿#pragma once
 
 #include "PacketHandler.h"
-#include "Socket.h"
 
 class PacketSender : public PacketHandler
 {
     void update() override;
 
 public:
-    PacketSender(Socket* socket);
+    PacketSender(const std::shared_ptr<Socket>& socket);
 
-    void send(std::shared_ptr<uint8_t[]> data, size_t length, const Address& address);
+    void send(const std::shared_ptr<uint8_t[]>& data, size_t length, const Address& address);
 };

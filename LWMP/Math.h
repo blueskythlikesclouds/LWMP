@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <cmath>
-
 inline Vector3 getTranslation(const Matrix34& m)
 {
     return {m.data[3][0], m.data[3][1], m.data[3][2]};

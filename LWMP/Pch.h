@@ -27,19 +27,29 @@
 #include <boost/preprocessor.hpp>
 
 // stl
+#include <array>
+#include <atomic>
 #include <cstdint>
 #include <cstdio>
-
-// nameof
-#include <nameof/nameof.hpp>
+#include <memory>
+#include <mutex>
+#include <set>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 // detours
 #include <detours.h>
 
 // LWMP
+#define BASE_ADDRESS 0x400000
+
+#include "Address.h"
+#include "VarInt.h"
+#include "BitReader.h"
+#include "BitWriter.h"
 #include "Debug.h"
 #include "Helpers.h"
 #include "Types.h"
 #include "Math.h"
-#include "MurmurHash.h"
-#include "VarInt.h"
+#include "Functions.h"

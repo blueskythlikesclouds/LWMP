@@ -1,15 +1,13 @@
 ﻿#pragma once
 
-#include "MemoryPool.h"
 #include "PacketHandler.h"
-#include "Socket.h"
 
 class PacketReceiver : public PacketHandler
 {
-    MemoryPool* pool;
+    std::shared_ptr<MemoryPool> pool;
 
     void update() override;
 
 public:
-    PacketReceiver(Socket* socket, MemoryPool* pool);
+    PacketReceiver(const std::shared_ptr<Socket>& socket, const std::shared_ptr<MemoryPool>& pool);
 };

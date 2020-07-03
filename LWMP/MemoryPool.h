@@ -1,11 +1,8 @@
 ﻿#pragma once
 
-#include <atomic>
-#include <mutex>
-#include <vector>
-
-struct MemoryArena
+class MemoryArena
 {
+public:
     uint8_t* data;
     std::atomic<bool> used;
 
@@ -16,13 +13,12 @@ struct MemoryArena
 class MemoryPool
 {
     size_t arenaSize;
-    std::vector<MemoryArena*> arenas;
+    std::vector<std::unique_ptr<MemoryArena>> arenas;
 
     std::mutex mutex;
 
 public:
     MemoryPool(size_t arenaSize);
-    ~MemoryPool();
 
     std::shared_ptr<uint8_t[]> allocate();
 

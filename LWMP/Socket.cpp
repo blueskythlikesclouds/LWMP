@@ -43,7 +43,11 @@ bool Socket::receive(uint8_t* data, const size_t length, Address* address, size_
 
 bool Socket::send(uint8_t* data, size_t length, const Address& address)
 {
-    sockaddr_in socketAddress = address.toNative();
-    connected = sendto(socket, (const char*)data, length, 0, (const sockaddr*)&socketAddress, sizeof(socketAddress)) != SOCKET_ERROR;
+    const sockaddr_in socketAddress = address.toNative();
+    return connected = sendto(socket, (const char*)data, length, 0, (const sockaddr*)&socketAddress, sizeof(socketAddress)) != SOCKET_ERROR;
+}
+
+bool Socket::isConnected()
+{
     return connected;
 }

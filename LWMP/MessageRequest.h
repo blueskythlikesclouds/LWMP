@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-#include "Address.h"
-#include "MessageInfo.h"
+struct MessageInfo;
 
 class MessageRequest
 {

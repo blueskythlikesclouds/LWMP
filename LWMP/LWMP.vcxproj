@@ -114,12 +114,11 @@
     <ClInclude Include="Client.h" />
     <ClInclude Include="MessageSender.h" />
     <ClInclude Include="MessageStream.h" />
-    <ClInclude Include="MurmurHash.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketHandler.h" />
     <ClInclude Include="PacketReceiver.h" />
     <ClInclude Include="PacketSender.h" />
-    <ClInclude Include="PlayerData.h" />
+    <ClInclude Include="PlayerHandler.h" />
     <ClInclude Include="Pch.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="Session.h" />
@@ -150,7 +149,7 @@
     <ClCompile Include="PacketHandler.cpp" />
     <ClCompile Include="PacketReceiver.cpp" />
     <ClCompile Include="PacketSender.cpp" />
-    <ClCompile Include="PlayerData.cpp" />
+    <ClCompile Include="PlayerHandler.cpp" />
     <ClCompile Include="Pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

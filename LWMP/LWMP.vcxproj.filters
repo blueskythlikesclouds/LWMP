@@ -33,9 +33,6 @@
     <ClInclude Include="VarInt.h">
       <Filter>Memory</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerData.h">
-      <Filter>Mod</Filter>
-    </ClInclude>
     <ClInclude Include="Session.h">
       <Filter>Mod</Filter>
     </ClInclude>
@@ -92,8 +89,8 @@
     </ClInclude>
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Pch.h" />
-    <ClInclude Include="MurmurHash.h">
-      <Filter>IO</Filter>
+    <ClInclude Include="PlayerHandler.h">
+      <Filter>Mod</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -117,9 +114,6 @@
       <Filter>Messages</Filter>
     </ClCompile>
     <ClCompile Include="Session.cpp">
-      <Filter>Mod</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerData.cpp">
       <Filter>Mod</Filter>
     </ClCompile>
     <ClCompile Include="MessageRequest.cpp">
@@ -170,6 +164,9 @@
     <ClCompile Include="Pch.cpp" />
     <ClCompile Include="Animations.cpp">
       <Filter>LostWorld</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerHandler.cpp">
+      <Filter>Mod</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

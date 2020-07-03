@@ -1,4 +1,8 @@
 ﻿#include "MessageStream.h"
+#include "MemoryPool.h"
+#include "MessageData.h"
+#include "MessageInfo.h"
+#include "MessageRequest.h"
 
 #define READER_CASE(type) \
     case sizeof(type): \
@@ -14,8 +18,8 @@
         break; \
     }
 
-void MessageStream::readMessages(BitReader& reader, const MessageInfo* info, MemoryPool* pool,
-    std::vector<MessageRequest>& requests, std::vector<MessageData>& messages, const Address& address)
+void MessageStream::readMessages(BitReader& reader, const MessageInfo* info, MemoryPool& pool,
+                                 std::vector<MessageRequest>& requests, std::vector<MessageData>& messages, const Address& address)
 {
     if (reader.read())
         requests.emplace_back(info, address);
@@ -30,7 +34,7 @@ void MessageStream::readMessages(BitReader& reader, const MessageInfo* info, Mem
 
     for (size_t i = 0; i < count; i++)
     {
-        std::shared_ptr<Message> message = pool->allocate<Message>();
+        std::shared_ptr<Message> message = pool.allocate<Message>();
 
         for (size_t j = 0; j < info->fieldCount; j++)
         {

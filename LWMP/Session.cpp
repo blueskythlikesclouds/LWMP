@@ -1,44 +1,33 @@
-﻿#include "Session.h"
+﻿#include "Client.h"
+#include "MemoryPool.h"
+#include "MessageReceiver.h"
+#include "MessageSender.h"
+#include "PacketReceiver.h"
+#include "PacketSender.h"
+#include "PlayerHandler.h"
 #include "Server.h"
-#include "Client.h"
+#include "Session.h"
 
 void Session::createHandlers()
 {
-    packetReceiver = new PacketReceiver(socket, pool);
-    packetSender = new PacketSender(socket);
-    messageReceiver = new MessageReceiver(packetReceiver, pool);
-    messageSender = new MessageSender(packetSender, pool);
+    packetReceiver = std::make_shared<PacketReceiver>(socket, pool);
+    packetSender = std::make_shared<PacketSender>(socket);
+    messageReceiver = std::make_unique<MessageReceiver>(packetReceiver, pool);
+    messageSender = std::make_unique<MessageSender>(packetSender, pool);
 }
 
-void Session::deleteHandlers()
-{
-    delete packetReceiver, packetReceiver = nullptr;
-    delete packetSender, packetSender = nullptr;
-    delete messageReceiver, messageReceiver = nullptr;
-    delete messageSender, messageSender = nullptr;
-}
-
-Session::Session() : socket(NULL), isConnected(false), timedOut(false), pool(new MemoryPool(128)),
-                     packetReceiver(NULL), packetSender(NULL), messageReceiver(NULL), messageSender(NULL)
+Session::Session() : pool(std::make_shared<MemoryPool>(128))
 {
 
 }
 
-Session::~Session()
-{
-    delete socket;
-    delete pool;
-    delete packetReceiver;
-    delete packetSender;
-    delete messageReceiver;
-    delete messageSender;
-}
+Session::~Session() = default;
 
 void Session::openClient(const Address& address)
 {
     closeSocket();
 
-    socket = static_cast<Socket*>(new Client());
+    socket = std::make_shared<Client>();
     remoteAddress = address;
 
     createHandlers();
@@ -48,24 +37,43 @@ void Session::openServer(const uint16_t port)
 {
     closeSocket();
 
-    socket = static_cast<Socket*>(new Server(port));
+    socket = std::make_shared<Server>(port);
     createHandlers();
 }
 
 void Session::closeSocket()
 {
-    delete socket, socket = nullptr;
-    deleteHandlers();
+    socket = nullptr;
 }
 
-void Session::preUpdate()
+void Session::preUpdate() const
 {
     messageReceiver->update();
 }
 
-void Session::postUpdate()
+void Session::postUpdate() const
 {
     messageSender->update();
+}
+
+const std::shared_ptr<Socket>& Session::getSocket() const
+{
+    return socket;
+}
+
+Address Session::getRemoteAddress() const
+{
+    return remoteAddress;
+}
+
+void Session::setRemoteAddress(const Address& address)
+{
+    remoteAddress = address;
+}
+
+const std::shared_ptr<MemoryPool>& Session::getPool() const
+{
+    return pool;
 }
 
 const std::vector<MessageRequest>& Session::getReceivedRequests() const
@@ -78,22 +86,31 @@ const std::vector<MessageData>& Session::getReceivedMessages() const
     return messageReceiver->getMessages();
 }
 
+void Session::updatePlayer(PlayerType type) const
+{
+    PlayerHandler* handler = players[(uint32_t)type].get();
+
+    if (handler)
+        handler->update(*this);
+}
+
+CPlayer* Session::getPlayer(PlayerType type) const
+{
+    PlayerHandler* handler = players[(uint32_t)type].get();
+    return handler ? handler->getPlayer() : nullptr;
+}
+
+void Session::setPlayer(PlayerType type, CPlayer* player)
+{
+    players[(uint32_t)type] = player ? std::make_unique<PlayerHandler>(type, player) : nullptr;
+}
+
 void Session::requestMessage(const MessageInfo* info) const
 {
     messageSender->request(info, remoteAddress);
 }
 
-void Session::sendMessage(const MessageInfo* info, std::shared_ptr<Message> message) const
+void Session::sendMessage(const MessageInfo* info, const std::shared_ptr<Message>& message) const
 {
-    messageSender->send(info, std::move(message), remoteAddress);
-}
-
-Socket* Session::getSocket() const
-{
-    return socket;
-}
-
-Address Session::getRemoteAddress() const
-{
-    return remoteAddress;
+    messageSender->send(info, message, remoteAddress);
 }

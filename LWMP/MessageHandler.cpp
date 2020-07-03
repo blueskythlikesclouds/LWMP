@@ -1,6 +1,6 @@
 ﻿#include "MessageHandler.h"
 
-MessageHandler::MessageHandler(PacketHandler* handler, MemoryPool* pool) : handler(handler), pool(pool)
+MessageHandler::MessageHandler(const std::shared_ptr<PacketHandler>& handler, const std::shared_ptr<MemoryPool>& pool) : handler(handler), pool(pool)
 {
 }
 

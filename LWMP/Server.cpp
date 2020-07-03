@@ -10,9 +10,9 @@ Server::Server(const uint16_t port) : Socket(SOCK_DGRAM, 0), port(port)
     DEBUG_PRINT("Server::Server(): bind() failed\n");
 }
 
-Socket::Type Server::getType() const
+SocketType Server::getType() const
 {
-    return Type::SERVER;
+    return SocketType::SERVER;
 }
 
 uint16_t Server::getPort() const

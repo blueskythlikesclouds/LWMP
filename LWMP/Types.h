@@ -73,6 +73,19 @@ struct alignas(16) Quaternion
     float y;
     float z;
     float w;
+
+    friend bool operator==(const Quaternion& lhs, const Quaternion& rhs)
+    {
+        return lhs.x == rhs.x
+            && lhs.y == rhs.y
+            && lhs.z == rhs.z
+            && lhs.w == rhs.w;
+    }
+
+    friend bool operator!=(const Quaternion& lhs, const Quaternion& rhs)
+    {
+        return !(lhs == rhs);
+    }
 };
 
 struct CTimerCounterList
@@ -93,6 +106,18 @@ struct alignas(16) Vector3
     float y;
     float z;
     char gapC[0x4];
+
+    friend bool operator==(const Vector3& lhs, const Vector3& rhs)
+    {
+        return lhs.x == rhs.x
+            && lhs.y == rhs.y
+            && lhs.z == rhs.z;
+    }
+
+    friend bool operator!=(const Vector3& lhs, const Vector3& rhs)
+    {
+        return !(lhs == rhs);
+    }
 };
 
 struct TouchedMovableShapeInfo

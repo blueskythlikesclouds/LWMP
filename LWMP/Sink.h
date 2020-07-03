@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <stdexcept>
-
 class Sink
 {
     uint8_t* data;
@@ -13,7 +11,7 @@ public:
     {
     }
 
-    void put(uint8_t data, size_t bits)
+    void put(const uint8_t data, size_t bits)
     {
         if (pos > length)
             throw std::runtime_error("Sink exceeded max length");

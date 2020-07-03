@@ -1,13 +1,11 @@
 ﻿#include "PacketHandler.h"
 
-PacketHandler::PacketHandler(Socket* socket) : socket(socket), stop(false)
+PacketHandler::PacketHandler(const std::shared_ptr<Socket>& socket) : socket(socket), stop(false)
 {
     thread = std::thread([this]()
     {
-        while (!stop) 
-        {
+        while (!stop)
             update();
-        }
     });
 }
 
