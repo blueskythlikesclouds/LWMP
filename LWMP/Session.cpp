@@ -1,5 +1,6 @@
 ﻿#include "Session.h"
 #include "Server.h"
+#include "Client.h"
 
 void Session::createHandlers()
 {
@@ -20,6 +21,7 @@ void Session::deleteHandlers()
 Session::Session() : socket(NULL), isConnected(false), timedOut(false), pool(new MemoryPool(128)),
                      packetReceiver(NULL), packetSender(NULL), messageReceiver(NULL), messageSender(NULL)
 {
+
 }
 
 Session::~Session()
@@ -34,10 +36,20 @@ Session::~Session()
 
 void Session::openClient(const Address& address)
 {
+    closeSocket();
+
+    socket = static_cast<Socket*>(new Client());
+    remoteAddress = address;
+
+    createHandlers();
 }
 
 void Session::openServer(const uint16_t port)
 {
+    closeSocket();
+
+    socket = static_cast<Socket*>(new Server(port));
+    createHandlers();
 }
 
 void Session::closeSocket()
@@ -48,6 +60,7 @@ void Session::closeSocket()
 
 void Session::preUpdate()
 {
+    messageReceiver->update();
 }
 
 void Session::postUpdate()
@@ -73,6 +86,11 @@ void Session::requestMessage(const MessageInfo* info) const
 void Session::sendMessage(const MessageInfo* info, std::shared_ptr<Message> message) const
 {
     messageSender->send(info, std::move(message), remoteAddress);
+}
+
+Socket* Session::getSocket() const
+{
+    return socket;
 }
 
 Address Session::getRemoteAddress() const

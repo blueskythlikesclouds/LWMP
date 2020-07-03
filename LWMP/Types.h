@@ -19,6 +19,7 @@ typedef struct MoveArray_app__fnd__Handle_app__game__ColliShape_const
     MoveArray_app__fnd__Handle_app__game__ColliShape_const, *PMoveArray_app__fnd__Handle_app__game__ColliShape_const;
 typedef struct PositionTracer PositionTracer, *PPositionTracer;
 typedef struct CPhysics CPhysics, *PCPhysics;
+typedef struct GOCTransform;
 typedef struct CCameraController CCameraController, *PCCameraController;
 typedef struct IAllocator IAllocator, *PIAllocator;
 typedef struct GravityController GravityController, *PGravityController;
@@ -37,11 +38,12 @@ typedef struct CVisualUnit CVisualUnit, *PCVisualUnit;
 
 struct CPlayer
 {
-    char gap0[0x4];
+    void* vtable;
     int field4;
     char gap8[0x4];
     int fieldC;
-    char gap10[0x31C];
+    void* messageManager;
+    char gap10[0x318];
     void* components;
     char gap330[0xC];
     CPostureInputManager* postureInputManager;

@@ -12,7 +12,6 @@ void** const DISPLAY_SWITCH = (void**)ASLR(0xFD7358);
 int* const FEFEE8 = (int*)ASLR(0xFEFEE8);
 int* const WAIT_FOR_INPUT = (int*)ASLR(0xFEFEEC);
 int* const STATE = (int*)ASLR(0xFEFEF0);
-void** const GAME_DOCUMENT = (void**)ASLR(0xFEFEF4);
 void** const GENERAL_WINDOW = (void**)ASLR(0xFEFEF8);
 char* const IS_GLOBAL = (char*)ASLR(0xFEFEFC);
 char* const FEFEFD = (char*)ASLR(0xFEFEFD);

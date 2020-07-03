@@ -1,6 +1,6 @@
 ﻿#include "Socket.h"
 
-Socket::Socket(const int32_t type, const int32_t protocol) : socket(::socket(AF_INET, type, protocol))
+Socket::Socket(const int32_t type, const int32_t protocol) : socket(::socket(AF_INET, type, protocol)), connected(false)
 {
 }
 
@@ -9,7 +9,7 @@ Socket::~Socket()
     closesocket(socket);
 }
 
-bool Socket::receive(uint8_t* data, const size_t length, Address* address, size_t* receivedLength) const
+bool Socket::receive(uint8_t* data, const size_t length, Address* address, size_t* receivedLength)
 {
     size_t result;
 
@@ -29,16 +29,21 @@ bool Socket::receive(uint8_t* data, const size_t length, Address* address, size_
     }
 
     if (result == SOCKET_ERROR)
-        return false; 
+    {
+        connected = false;
+        return false;
+    }
 
     if (receivedLength)
         *receivedLength = result;
 
+    connected = true;
     return true;
 }
 
-bool Socket::send(uint8_t* data, const uint32_t length, const Address& address) const
+bool Socket::send(uint8_t* data, size_t length, const Address& address)
 {
     sockaddr_in socketAddress = address.toNative();
-    return sendto(socket, (const char*)data, length, 0, (const sockaddr*)&socketAddress, sizeof(socketAddress)) != SOCKET_ERROR;
+    connected = sendto(socket, (const char*)data, length, 0, (const sockaddr*)&socketAddress, sizeof(socketAddress)) != SOCKET_ERROR;
+    return connected;
 }

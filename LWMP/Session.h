@@ -16,6 +16,7 @@ class Session
     Address remoteAddress;
 
     bool isConnected;
+    bool timedOut;
 
     MemoryPool* pool;
 
@@ -48,6 +49,10 @@ public:
     void requestMessage(const MessageInfo* info) const;
     void sendMessage(const MessageInfo* info, std::shared_ptr<Message> message) const;
 
+    MemoryPool* getPool() {
+        return pool;
+    }
+
     template<typename T>
     void requestMessage()
     {
@@ -58,5 +63,10 @@ public:
     void sendMessage(std::shared_ptr<T> message)
     {
         sendMessage(&T::INFO, std::reinterpret_pointer_cast<T>(message));
+    }
+
+    void setRemoteAddress(Address address) 
+    {
+        remoteAddress = address;
     }
 };
