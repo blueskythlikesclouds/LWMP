@@ -7,6 +7,13 @@ struct Message
     uint8_t reserved;
 };
 
+struct MsgDummy : Message
+{
+    uint8_t dummy;
+
+    DEFINE_MESSAGE_INFO()
+};
+
 struct MsgHandleConnectRequest : Message
 {
     enum class Reply : uint8_t

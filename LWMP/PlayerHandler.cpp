@@ -11,133 +11,146 @@ PlayerHandler::PlayerHandler(const PlayerType type, CPlayer* player) : type(type
 
 void PlayerHandler::update(const Session& session)
 {
-    CStateGOC* stateGoc = (CStateGOC*)getComponent(&player->components, (void*)ASLR(0xDF77D8));
-    CVisualGOC* visualGoc = (CVisualGOC*)getComponent(&player->components, (void*)ASLR(0xE01360));
-    GOCTransform* transformGoc = (GOCTransform*)getGOC(player, (void*)ASLR(0x00D60B44));
+	CStateGOC* stateGoc = (CStateGOC*)getComponent(&player->components, CStateGOCString);
+	CVisualGOC* visualGoc = (CVisualGOC*)getComponent(&player->components, CVisualGOCString);
+	CGOComponent* collector = getGOC(player, GOCCollectorString);
+	GOCTransform* transform = (GOCTransform*)getGOC(player, GOCTransformString);
 
-    GOCAnimationScript* animationScript = visualGoc->currentVisual->gocReferenceHolder[0]->animationScript;
+	GOCAnimationScript* animationScript = visualGoc->currentVisual->gocReferenceHolder[0]->animationScript;
 
-    if (type == PlayerType::LOCAL)
-    {
-        previous = current;
+	if (type == PlayerType::LOCAL)
+	{
+		previous = current;
 
-        current.position = getTranslation(visualGoc->visualLocaterManager->matrix);
-        current.rotation = getQuaternion(visualGoc->visualLocaterManager->matrix);
-        current.bodyMode = player->blackBoard->bodyMode;
-        current.animationFrame = (float)getAnimationFrame(animationScript);
-        current.animationName = getCurrentAnimationName(animationScript->characterAnimationSingle);
-        current.ringCount = player->blackBoard->ringParameter->ringCount;
+		current.position = getTranslation(visualGoc->visualLocaterManager->matrix);
+		current.rotation = getQuaternion(visualGoc->visualLocaterManager->matrix);
+		current.bodyMode = player->blackBoard->bodyMode;
+		current.animationFrame = (float)getAnimationFrame(animationScript);
+		current.animationName = getCurrentAnimationName(animationScript->characterAnimationSingle);
+		current.ringCount = player->blackBoard->ringParameter->ringCount;
 
-        if (previous.position != current.position)
-        {
-            auto msgSetPosition = session.getPool()->allocate<MsgSetPosition>();
-            msgSetPosition->position = current.position;
-            session.sendMessage(msgSetPosition);
-        }
+		if (previous.position != current.position)
+		{
+			auto msgSetPosition = session.getPool()->allocate<MsgSetPosition>();
+			msgSetPosition->position = current.position;
+			session.sendMessage(msgSetPosition);
+		}
 
-        if (previous.rotation != current.rotation)
-        {
-            auto msgSetRotation = session.getPool()->allocate<MsgSetRotation>();
-            msgSetRotation->rotation = current.rotation;
-            session.sendMessage(msgSetRotation);
-        }
+		if (previous.rotation != current.rotation)
+		{
+			auto msgSetRotation = session.getPool()->allocate<MsgSetRotation>();
+			msgSetRotation->rotation = current.rotation;
+			session.sendMessage(msgSetRotation);
+		}
 
-        if (previous.bodyMode != current.bodyMode)
-        {
-            auto msgSetBodyMode = session.getPool()->allocate<MsgSetBodyMode>();
-            msgSetBodyMode->bodyMode = current.bodyMode;
-            session.sendMessage(msgSetBodyMode);
-        }
+		if (previous.bodyMode != current.bodyMode)
+		{
+			auto msgSetBodyMode = session.getPool()->allocate<MsgSetBodyMode>();
+			msgSetBodyMode->bodyMode = current.bodyMode;
+			session.sendMessage(msgSetBodyMode);
+		}
+		
+		if (previous.animationFrame != current.animationFrame)
+		{
+			auto msgSetAnimationFrame = session.getPool()->allocate<MsgSetAnimationFrame>();
 
-        if (previous.animationFrame != current.animationFrame)
-        {
-            auto msgSetAnimationFrame = session.getPool()->allocate<MsgSetAnimationFrame>();
+			double integralPart;
+			double fractionalPart = modf(current.animationFrame, &integralPart);
 
-            double integralPart;
-            double fractionalPart = modf(current.animationFrame, &integralPart);
+			msgSetAnimationFrame->animationFrameIntegral = (VarUInt)integralPart;
+			msgSetAnimationFrame->animationFrameFractional = (uint8_t)(fractionalPart * 255.0);
 
-            msgSetAnimationFrame->animationFrameIntegral = (VarUInt)integralPart;
-            msgSetAnimationFrame->animationFrameFractional = (uint8_t)(fractionalPart * 255.0);
+			session.sendMessage(msgSetAnimationFrame);
+		}
 
-            session.sendMessage(msgSetAnimationFrame);
-        }
+		if (previous.animationName != current.animationName)
+		{
+			auto msgSetAnimation = session.getPool()->allocate<MsgSetAnimation>();
+			auto result = ANIMATION_TO_INDEX_MAP.find(current.animationName);
+			if (result != ANIMATION_TO_INDEX_MAP.end())
+			{
+				msgSetAnimation->animationIndex = result->second;
+				session.sendMessage(msgSetAnimation);
+			}
+			else
+				DEBUG_PRINT("INVALID ANIMATION: %s", current.animationName);
+		}
 
-        if (previous.animationName != current.animationName)
-        {
-            auto msgSetAnimation = session.getPool()->allocate<MsgSetAnimation>();
-            msgSetAnimation->animationIndex = ANIMATION_TO_INDEX_MAP.at(current.animationName);
-            session.sendMessage(msgSetAnimation);
-        }
+		if (previous.ringCount != current.ringCount)
+		{
+			auto msgSetRingCount = session.getPool()->allocate<MsgSetRingCount>();
+			msgSetRingCount->ringCount = current.ringCount;
+			session.sendMessage(msgSetRingCount);
+		}
+	}
 
-        if (previous.ringCount != current.ringCount)
-        {
-            auto msgSetRingCount = session.getPool()->allocate<MsgSetRingCount>();
-            msgSetRingCount->ringCount = current.ringCount;
-            session.sendMessage(msgSetRingCount);
-        }
-    }
+	else
+	{
+		Vector3 position = player->physics->position;
+		Quaternion rotation = player->physics->rotation;
 
-    else
-    {
-        Vector3 position = player->physics->position;
-        Quaternion rotation = player->physics->rotation;
+		for (auto& messageData : session.getReceivedMessages())
+		{
+			switch (messageData.getId())
+			{
+			case MsgSetPosition::ID:
+				position = messageData.get<MsgSetPosition>()->position;
+				local.position = position;
+				break;
 
-        for (auto& messageData : session.getReceivedMessages())
-        {
-            switch (messageData.getId())
-            {
-            case MsgSetPosition::ID:
-                position = messageData.get<MsgSetPosition>()->position;
-                break;
+			case MsgSetRotation::ID:
+				rotation = messageData.get<MsgSetRotation>()->rotation;
+				local.rotation = rotation;
+				break;
 
-            case MsgSetRotation::ID:
-                rotation = messageData.get<MsgSetRotation>()->rotation;
-                break;
+			case MsgSetBodyMode::ID:
+			{
+				VarInt bodyMode = messageData.get<MsgSetBodyMode>()->bodyMode;
+				local.bodyMode = bodyMode;
 
-            case MsgSetBodyMode::ID:
-            {
-                VarInt bodyMode = messageData.get<MsgSetBodyMode>()->bodyMode;
-                if (player->blackBoard->bodyMode != bodyMode)
-                    changeVisual(stateGoc, bodyMode);
+				break;
+			}
 
-                break;
-            }
+			case MsgSetAnimation::ID:
+			{
+				const char* animationName = ANIMATIONS[min((size_t)messageData.get<MsgSetAnimation>()->animationIndex, ANIMATION_COUNT - 1)];
+				local.animationName = animationName;
+				break;
+			}
 
-            case MsgSetAnimation::ID:
-            {
-                const char* animationName = ANIMATIONS[min((size_t)messageData.get<MsgSetAnimation>()->animationIndex, ANIMATION_COUNT - 1)];
-                if (!isCurrentAnimation(animationScript->characterAnimationSingle, animationName))
-                    changeAnimation(animationScript->characterAnimationSingle, animationName);
+			case MsgSetAnimationFrame::ID:
+			{
+				const auto msgSetAnimationFrame = messageData.get<MsgSetAnimationFrame>();
+				local.animationFrame = (float)msgSetAnimationFrame->animationFrameIntegral + (float)msgSetAnimationFrame->animationFrameFractional / 255.0f;
 
-                break;
-            }
+				break;
+			}
 
-            case MsgSetAnimationFrame::ID:
-            {
-                const auto msgSetAnimationFrame = messageData.get<MsgSetAnimationFrame>();
+			case MsgSetRingCount::ID:
+			{
+				const auto msgSetRingCount = messageData.get<MsgSetRingCount>();
+				local.ringCount = msgSetRingCount->ringCount;
+				player->blackBoard->ringParameter->ringCount = local.ringCount;
 
-                setAnimationFrame(animationScript->characterAnimationSingle,
-                    (float)msgSetAnimationFrame->animationFrameIntegral + (float)msgSetAnimationFrame->animationFrameFractional / 255.0f);
+				break;
+			}
 
-                break;
-            }
+			default:
+				break;
+			}
+		}
 
-            case MsgSetRingCount::ID:
-            {
-                const auto msgSetRingCount = messageData.get<MsgSetRingCount>();
-                player->blackBoard->ringParameter->ringCount = msgSetRingCount->ringCount;
+		if (local.animationName != nullptr) 
+		{
+			changeVisual(stateGoc, local.bodyMode);
+			changeAnimation(animationScript->characterAnimationSingle, local.animationName);
+			setAnimationFrame(animationScript->characterAnimationSingle, local.animationFrame);
+		}
 
-                break;
-            }
-
-            default:
-                break;
-            }
-        }
-
-        player->physics->rotation = rotation;
-        setPosition(player->physics, position);
-    }
+		resetPosition(stateGoc, position, rotation);
+		player->physics->rotation = rotation;
+		setPosition(player->physics, position);
+	}
 }
 
 CPlayer* PlayerHandler::getPlayer() const

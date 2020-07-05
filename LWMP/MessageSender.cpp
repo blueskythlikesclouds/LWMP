@@ -24,8 +24,6 @@ void MessageSender::update()
         }
         writer.flush();
 
-        printf("%d\n", writer.getPosition());
-
         sender->send(data, writer.getPosition(), address);
     }
 

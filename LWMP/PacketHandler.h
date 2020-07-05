@@ -25,4 +25,9 @@ public:
     virtual std::unique_lock<std::mutex> lock();
     virtual const std::vector<Packet>& getPackets();
     virtual void clear();
+
+    virtual const bool hasPackets()
+    {
+        return getPackets().size() > 0;
+    }
 };

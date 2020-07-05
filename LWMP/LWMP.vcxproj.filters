@@ -92,6 +92,9 @@
     <ClInclude Include="PlayerHandler.h">
       <Filter>Mod</Filter>
     </ClInclude>
+    <ClInclude Include="Globals.h">
+      <Filter>LostWorld</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />

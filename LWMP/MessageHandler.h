@@ -24,4 +24,8 @@ public:
 
     virtual const std::vector<MessageRequest>& getRequests();
     virtual const std::vector<MessageData>& getMessages();
+    virtual const bool hasData()
+    {
+        return getMessages().size() > 0 || getRequests().size() > 0;
+    }
 };

@@ -100,6 +100,7 @@
     <ClInclude Include="BitReader.h" />
     <ClInclude Include="BitWriter.h" />
     <ClInclude Include="Debug.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="Functions.h" />

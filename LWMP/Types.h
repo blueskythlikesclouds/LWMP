@@ -28,13 +28,25 @@ typedef struct CVisualLocaterManager CVisualLocaterManager, *PCVisualLocaterMana
 typedef struct GOCVisualModel GOCVisualModel, *PGOCVisualModel;
 typedef struct GOCSound GOCSound, *PGOCSound;
 typedef struct CPlayerVisual CPlayerVisual, *PCPlayerVisual;
-typedef struct CVisualGOC CVisualGOC, *PCVisualGOC;
+typedef class CVisualGOC CVisualGOC, *PCVisualGOC;
 typedef struct CVisualLocater CVisualLocater, *PCVisualLocater;
 typedef struct CharactorAnimationSingle CharactorAnimationSingle, *PCharactorAnimationSingle;
 typedef struct GOCAnimationScript GOCAnimationScript, *PGOCAnimationScript;
 typedef struct EffectList EffectList, *PEffectList;
 typedef struct GOCReferenceHolderUnit GOCReferenceHolderUnit, *PGOCReferenceHolderUnit;
 typedef struct CVisualUnit CVisualUnit, *PCVisualUnit;
+typedef struct SUpdateInfo;
+typedef class CGOComponent;
+
+class CGOComponent
+{
+public:
+    virtual void destruct() = 0;
+    virtual void unknown() = 0;
+    virtual void Update(float delta) = 0;
+    virtual void Initialize() = 0;
+    virtual void Finalize() = 0;
+};
 
 struct CPlayer
 {
@@ -327,9 +339,15 @@ struct CPlayerVisual
     GOCReferenceHolderUnit** gocReferenceHolder;
 };
 
-struct CVisualGOC
+class CVisualGOC : CGOComponent
 {
-    unsigned int field0;
+public:
+    virtual void destruct() = 0;
+    virtual void unknown() = 0;
+    virtual void Update(float delta) = 0;
+    virtual void Initialize(void* data) = 0;
+    virtual void Finalize() = 0;
+
     unsigned short field4;
     unsigned short field6;
     unsigned int field8;
@@ -381,4 +399,10 @@ struct GOCReferenceHolderUnit
 
 struct CVisualUnit
 {
+};
+
+struct SUpdateInfo
+{
+    float deltaTime;
+    uint32_t frame;
 };

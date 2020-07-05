@@ -2,6 +2,7 @@
 #include "MemoryPool.h"
 #include "MessageReceiver.h"
 #include "MessageSender.h"
+#include "Messages.h"
 #include "PacketReceiver.h"
 #include "PacketSender.h"
 #include "PlayerHandler.h"
@@ -46,14 +47,41 @@ void Session::closeSocket()
     socket = nullptr;
 }
 
-void Session::preUpdate() const
+void Session::preUpdate()
 {
     messageReceiver->update();
+    isConnected = socket->isConnected();
+
+    if (messageReceiver->hasData())
+    {
+        timedOut = false;
+        lastUpdate = std::chrono::system_clock::now();
+        for (MessageRequest request : getReceivedRequests()) 
+        {
+            if (request.isOfType<MsgHandleConnectRequest>())
+            {
+                auto connectRequest = pool->allocate<MsgHandleConnectRequest>();
+                connectRequest->reply = MsgHandleConnectRequest::Reply::ACCEPTED;
+                setRemoteAddress(request.getAddress());
+                sendMessage(connectRequest);
+            }
+        }
+    }
 }
 
-void Session::postUpdate() const
+void Session::postUpdate()
 {
+    std::chrono::duration<double> elapsed = std::chrono::system_clock::now() - lastUpdate;
+    
+    // Request a dummy message to make sure we are still connected
+    if (elapsed.count() > timeout && !timedOut) {
+        requestMessage<MsgDummy>();
+        timedOut = true;
+    }
+
     messageSender->update();
+    isConnected = socket->isConnected();
+    timedOut = !isConnected;
 }
 
 const std::shared_ptr<Socket>& Session::getSocket() const

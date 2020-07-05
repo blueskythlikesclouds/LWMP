@@ -17,9 +17,11 @@ struct MessageInfo;
 
 class Session
 {
+    std::chrono::system_clock::time_point lastUpdate;
     std::shared_ptr<Socket> socket;
     Address remoteAddress;
 
+    double timeout{5};
     bool isConnected{};
     bool timedOut{};
 
@@ -43,8 +45,8 @@ public:
     void openServer(uint16_t port);
     void closeSocket();
 
-    void preUpdate() const;
-    void postUpdate() const;
+    void preUpdate();
+    void postUpdate();
 
     void updatePlayer(PlayerType type) const;
 

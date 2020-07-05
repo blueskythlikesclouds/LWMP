@@ -24,6 +24,7 @@ class PlayerHandler
 
     PlayerData previous;
     PlayerData current;
+    PlayerData local;
 
     CPlayer* player;
     

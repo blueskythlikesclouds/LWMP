@@ -1,6 +1,7 @@
 #include "Messages.h"
 #include "MessageInfoRegistry.h"
 
+DECLARE_MESSAGE_INFO(MsgDummy, dummy)
 DECLARE_MESSAGE_INFO(MsgHandleConnectRequest, reply)
 DECLARE_MESSAGE_INFO(MsgSetPosition, position.x, position.y, position.z)
 DECLARE_MESSAGE_INFO(MsgSetRotation, rotation)
