@@ -23,6 +23,8 @@ struct Address
     bool operator>(const Address& right) const;
     bool operator>=(const Address& right) const;
 
+    static struct Address fromHostName(const char* address, uint16_t port);
+
     struct sockaddr_in toNative() const;
     static struct Address fromNative(struct sockaddr_in& socketAddress);
 

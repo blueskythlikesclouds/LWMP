@@ -54,6 +54,24 @@ bool Address::operator>=(const Address& right) const
     return !(*this < right);
 }
 
+Address Address::fromHostName(const char* address, uint16_t port)
+{
+    ADDRINFOA* info = nullptr;
+    INT result = getaddrinfo(address, "0", NULL, &info);
+
+    while (info != nullptr)
+    {
+        if (info->ai_family == AF_INET)
+        {
+            sockaddr_in* addr = (sockaddr_in*)info->ai_addr;
+            return { addr->sin_addr.S_un.S_addr, port };
+        }
+        info = info->ai_next;
+    }
+
+    return { 0u, 0 };
+}
+
 sockaddr_in Address::toNative() const
 {
     sockaddr_in socketAddress{};

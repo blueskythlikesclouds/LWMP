@@ -76,7 +76,7 @@ extern "C" void __declspec(dllexport) __cdecl Init(const void* data)
 
     bool isHost = MessageBox(nullptr, "Are you the host?", nullptr, MB_YESNO) == IDYES;
     if (!isHost)
-        address = Address("127.0.0.1", 42069);
+        address = Address::fromHostName("localhost", 42069);
 
     session = std::make_unique<Session>();
     if (isHost)
