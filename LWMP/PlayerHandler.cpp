@@ -73,7 +73,7 @@ void PlayerHandler::update(const Session& session)
 				session.sendMessage(msgSetAnimation);
 			}
 			else
-				DEBUG_PRINT("INVALID ANIMATION: %s", current.animationName);
+				DEBUG_PRINT("INVALID ANIMATION: %s\n", current.animationName);
 		}
 
 		if (previous.ringCount != current.ringCount)
@@ -135,6 +135,19 @@ void PlayerHandler::update(const Session& session)
 				break;
 			}
 
+			case MsgDamageEvent::ID:
+			{
+				const auto msgDamageEvent = messageData.get<MsgDamageEvent>();
+				uint32_t objectID = msgDamageEvent->damagedObject;
+
+				MsgDamage msgDamage;
+				memset(&msgDamage, 0, sizeof(MsgDamage));
+				msgDamageCtor(msgDamage, 0, 8, 3, player->physics->position, player->physics->position);
+				sendMessageToSetObject(player, objectID, &msgDamage, false);
+
+				break;
+			}
+
 			default:
 				break;
 			}
@@ -148,8 +161,9 @@ void PlayerHandler::update(const Session& session)
 		}
 
 		resetPosition(stateGoc, position, rotation);
-		player->physics->rotation = rotation;
-		setPosition(player->physics, position);
+		//player->physics->rotation = rotation;
+		//setPosition(player->physics, position);
+		//setLocalTranslationAndRotation(transform, position, rotation);
 	}
 }
 

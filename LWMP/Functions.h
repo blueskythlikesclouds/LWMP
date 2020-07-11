@@ -26,7 +26,7 @@ static FUNCTION_PTR(void*, __thiscall, setLocalTranslationAndRotation, ASLR(0x49
 static FUNCTION_PTR(void*, __thiscall, gameDocumentAddObject, ASLR(0x90B3C0), void* This, void* object);
 static FUNCTION_PTR(int, __cdecl, getPlayerNo, ASLR(0x73DDD0), void* gameDocument, int id);
 static FUNCTION_PTR(int, __cdecl, getPlayerActorId, ASLR(0x73DDF0), void* gameDocument, int no);
-static FUNCTION_PTR(void*, __thiscall, getActor, ASLR(0x49A950), void* messageManager, int actorID);
+static FUNCTION_PTR(void*, __thiscall, getActor, ASLR(0x49A950), void* messageManager, uint32_t actorID);
 static FUNCTION_PTR(CGOComponent*, __thiscall, getComponent, ASLR(0x914370), void* This, char* componentName);
 static FUNCTION_PTR(CGOComponent*, __thiscall, getGOC, ASLR(0x49D430), void* This, char* componentName);
 static FUNCTION_PTR(void, __cdecl, generalWindowDisappear, ASLR(0x95E3F0));
@@ -37,3 +37,27 @@ static FUNCTION_PTR(void*, __cdecl, getSteamAvatar, ASLR(0x525250), int quality,
 static FUNCTION_PTR(void, __cdecl, resetPosition, ASLR(0x8D85F0), CStateGOC* This, Vector3& position, Quaternion& rotation);
 static FUNCTION_PTR(void*, __thiscall, setAllTriggerEnable, ASLR(0x861DD0), CGOComponent* collisionGoc, bool enabled);
 static FUNCTION_PTR(void*, __thiscall, setTriggerEnable, ASLR(0x861DA0), CGOComponent* collisionGoc, unsigned int id, bool enabled);
+static FUNCTION_PTR(void*, __thiscall, getShapeById, ASLR(0x4B6930), CGOComponent* gocCollider, unsigned int id);
+static FUNCTION_PTR(void*, __thiscall, initGameObjectHandleBase, ASLR(0x049D490), GameObjectHandleBase& handle, void* object);
+static FUNCTION_PTR(void, __thiscall, msgDamageCtor, ASLR(0x4D8500), MsgDamage& msg, uint32_t senderType, uint32_t a3, uint32_t a4, Vector3& pos1, Vector3& pos2);
+static FUNCTION_PTR(void, __cdecl, sendMessageToSetObject, ASLR(0x73DC40), void* sender, uint32_t& to, void* message, bool a4);
+static FUNCTION_PTR(void*, __thiscall, getServiceByClass, ASLR(0x90B2E0), void* gameDocument, void* cls);
+static FUNCTION_PTR(void, __thiscall, getSetObjectFromUniqID, ASLR(0x84C830), void* setObjectManager, void** setObject, uint32_t id);
+static FUNCTION_PTR(void*, __thiscall, findPack, ASLR(0x84F0C0), void* actorManager, uint32_t id);
+static FUNCTION_PTR(CSetObjectListener*, __thiscall, getNthObject, ASLR(0x841400), void* setObject, uint32_t n);
+
+inline CSetObjectListener* getObject(uint32_t actorID)
+{
+	return (CSetObjectListener*)((uint32_t)getActor(*MESSAGE_MANAGER, actorID) - 8);
+}
+
+inline CSetObjectListener* getSetObjectFromID(uint32_t actorID)
+{
+	void* targetObj = nullptr;
+	getSetObjectFromUniqID(getServiceByClass(*GAME_DOCUMENT, CSetObjectManagerStaticClass), &targetObj, actorID);
+
+	if (targetObj == nullptr)
+		return nullptr;
+
+	return getNthObject(targetObj, 0);
+}

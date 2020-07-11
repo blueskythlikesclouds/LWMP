@@ -69,3 +69,10 @@ struct MsgSetRingCount : Message
 
     DEFINE_MESSAGE_INFO()
 };
+
+struct MsgDamageEvent : Message
+{
+    VarUInt damagedObject;
+
+    DEFINE_MESSAGE_INFO()
+};

@@ -61,6 +61,21 @@ HOOK(void*, __fastcall, GameTick, ASLR(0x4AC3A0), void* This, void* Edx, void* a
     return result;
 }
 
+HOOK(void*, __fastcall, SendMessageImm, ASLR(0x49A470), void* This, void* Edx, uint32_t to, xgame::Message* message)
+{
+    if (session->getPlayer(PlayerType::LOCAL)->gap8 == This)
+    {
+        if (message->ID == 0x4001)
+        {
+            CSetObjectListener* listener = getObject(to);
+            auto kickEvent = session->getPool()->allocate<MsgDamageEvent>();
+            kickEvent->damagedObject = listener->setObjectInfo->objectData->objectID;
+            session->sendMessage(kickEvent);
+        }
+    }
+    return originalSendMessageImm(This, Edx, to, message);
+}
+
 extern "C" void __declspec(dllexport) __cdecl Init(const void* data)
 {
     if (!WinSocket::startup())
@@ -71,6 +86,7 @@ extern "C" void __declspec(dllexport) __cdecl Init(const void* data)
 
     INSTALL_HOOK(PlayerUpdate);
     INSTALL_HOOK(GameTick);
+    INSTALL_HOOK(SendMessageImm);
 
     Address address;
 
