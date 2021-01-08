@@ -76,7 +76,7 @@ HOOK(void*, __fastcall, SendMessageImm, ASLR(0x49A470), void* This, void* Edx, u
     return originalSendMessageImm(This, Edx, to, message);
 }
 
-extern "C" void __declspec(dllexport) __cdecl Init(const void* data)
+extern "C" void __declspec(dllexport) __cdecl Init(ModInfo* modInfo)
 {
     if (!WinSocket::startup())
     {
@@ -88,18 +88,33 @@ extern "C" void __declspec(dllexport) __cdecl Init(const void* data)
     INSTALL_HOOK(GameTick);
     INSTALL_HOOK(SendMessageImm);
 
-    Address address;
+    std::string dir = modInfo->CurrentMod->Path;
 
-    bool isHost = MessageBox(nullptr, "Are you the host?", nullptr, MB_YESNO) == IDYES;
-    if (!isHost)
-        address = Address::fromHostName("localhost", 42069);
+    size_t pos = dir.find_last_of("\\/");
+    if (pos != std::string::npos)
+        dir.erase(pos + 1);
+
+    INIReader* reader = new INIReader("LWMP.ini");
+    if (reader->ParseError() != 0)
+        delete reader, reader = new INIReader(dir + "LWMP.ini");
+
+    if (reader->ParseError() != 0)
+        MessageBox(NULL, TEXT("Failed to parse LWMP.ini"), NULL, MB_ICONERROR);
+
+    const Address address = Address::fromHostName(reader->Get("Main", "IP", "localhost").c_str(), reader->GetInteger("Main", "Port", 42069));
+
+    // printf("[LWMP] %d.%d.%d.%d:%d\n", address.numbers[0], address.numbers[1], address.numbers[2], address.numbers[3], address.port);
 
     session = std::make_unique<Session>();
-    if (isHost)
-        session->openServer(42069);
+    if (reader->GetBoolean("Main", "IsHost", true))
+    {
+        session->openServer(address.port);
+    }
     else
     {
         session->openClient(address);
         session->requestMessage<MsgHandleConnectRequest>();
     }
+
+    delete reader;
 }

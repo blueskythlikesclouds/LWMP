@@ -95,6 +95,8 @@
     <ClInclude Include="Globals.h">
       <Filter>LostWorld</Filter>
     </ClInclude>
+    <ClInclude Include="INIReader.h" />
+    <ClInclude Include="LostCodeLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
