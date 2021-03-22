@@ -46,15 +46,15 @@ static FUNCTION_PTR(void, __thiscall, getSetObjectFromUniqID, ASLR(0x84C830), vo
 static FUNCTION_PTR(void*, __thiscall, findPack, ASLR(0x84F0C0), void* actorManager, uint32_t id);
 static FUNCTION_PTR(CSetObjectListener*, __thiscall, getNthObject, ASLR(0x841400), void* setObject, uint32_t n);
 
-inline CSetObjectListener* getObject(uint32_t actorID)
+inline app::CSetObjectListener* getObject(uint32_t actorID)
 {
-	return (CSetObjectListener*)((uint32_t)getActor(*MESSAGE_MANAGER, actorID) - 8);
+	return dynamic_cast<app::CSetObjectListener*>(csl::fnd::Singleton<app::fnd::MessageManager>::GetInstance()->GetActor(actorID));
 }
 
 inline CSetObjectListener* getSetObjectFromID(uint32_t actorID)
 {
 	void* targetObj = nullptr;
-	getSetObjectFromUniqID(getServiceByClass(*GAME_DOCUMENT, CSetObjectManagerStaticClass), &targetObj, actorID);
+	getSetObjectFromUniqID(getServiceByClass(app::GameDocument::GetSingleton(), CSetObjectManagerStaticClass), &targetObj, actorID);
 
 	if (targetObj == nullptr)
 		return nullptr;

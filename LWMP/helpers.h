@@ -1,12 +1,5 @@
 ﻿#pragma once
 
-#ifdef BASE_ADDRESS
-const HMODULE MODULE_HANDLE = GetModuleHandle(nullptr);
-
-#define ASLR(address) \
-    ((size_t)MODULE_HANDLE + (size_t)address - (size_t)BASE_ADDRESS)
-#endif
-
 #define FUNCTION_PTR(returnType, callingConvention, function, location, ...) \
     returnType (callingConvention *function)(__VA_ARGS__) = (returnType(callingConvention*)(__VA_ARGS__))(location)
 

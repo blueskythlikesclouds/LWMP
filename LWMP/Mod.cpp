@@ -67,10 +67,14 @@ HOOK(void*, __fastcall, SendMessageImm, ASLR(0x49A470), void* This, void* Edx, u
     {
         if (message->ID == 0x4001)
         {
-            CSetObjectListener* listener = getObject(to);
-            auto kickEvent = session->getPool()->allocate<MsgDamageEvent>();
-            kickEvent->damagedObject = listener->setObjectInfo->objectData->objectID;
-            session->sendMessage(kickEvent);
+            app::CSetObjectListener* listener = getObject(to);
+
+            if (listener)
+            {
+                auto kickEvent = session->getPool()->allocate<MsgDamageEvent>();
+                kickEvent->damagedObject = listener->GetAdapter()->GetObjectResource()->ref().GetID();
+                session->sendMessage(kickEvent);
+            }
         }
     }
     return originalSendMessageImm(This, Edx, to, message);

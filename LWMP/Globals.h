@@ -1,7 +1,7 @@
 #pragma once
 
-void** const GAME_DOCUMENT = (void**)ASLR(0xFEFEF4);
-void** const MESSAGE_MANAGER = (void**)ASLR(0xFD4300);
+//void** const GAME_DOCUMENT = (void**)ASLR(0xFEFEF4);
+//void** const MESSAGE_MANAGER = (void**)ASLR(0xFD4300);
 char* const GOCTransformString = (char*)ASLR(0xD60B44);
 char* const GOCCollectorString = (char*)ASLR(0xDF7DF4);
 char* const GOCCharacterInputString = (char*)ASLR(0xD64248);

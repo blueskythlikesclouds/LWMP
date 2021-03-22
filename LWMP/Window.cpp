@@ -58,7 +58,7 @@ void Window::appear(const wchar_t* text, WindowButtons* buttons, const float* ti
     *GENERAL_WINDOW = generalWindowCtor(gameObjectNew(0x15C), &sParam);
     setText(text);
 
-    gameDocumentAddObject(*GAME_DOCUMENT, *GENERAL_WINDOW);
+    gameDocumentAddObject(app::GameDocument::GetSingleton(), *GENERAL_WINDOW);
 
     *FEFEFD = 0;
     *IS_GLOBAL = true;

@@ -23,6 +23,9 @@
 
 #pragma warning(pop)
 
+// LWAPI
+#include <Sonic2013.h>
+
 // boost
 #include <boost/preprocessor.hpp>
 
