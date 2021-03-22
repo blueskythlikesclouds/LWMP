@@ -97,6 +97,8 @@
     </ClInclude>
     <ClInclude Include="INIReader.h" />
     <ClInclude Include="LostCodeLoader.h" />
+    <ClInclude Include="MultiplayerService.h" />
+    <ClInclude Include="MultiplayerManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
@@ -173,6 +175,8 @@
     <ClCompile Include="PlayerHandler.cpp">
       <Filter>Mod</Filter>
     </ClCompile>
+    <ClCompile Include="MultiplayerService.cpp" />
+    <ClCompile Include="MultiplayerManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Network">

@@ -1,17 +1,17 @@
 #include "MemoryPool.h"
 #include "MessageData.h"
 #include "Messages.h"
+#include "MultiplayerManager.h"
 #include "PlayerHandler.h"
 #include "Session.h"
 #include "Socket.h"
 #include "WinSocket.h"
 
-std::unique_ptr<Session> session;
-
 HOOK(void, __fastcall, PlayerUpdate, ASLR(0x852820), CPlayer* This, void* Edx, SUpdateInfo* update)
 {
     CPlayer* player = (CPlayer*)((uint32_t)This - 8);
 
+    auto& session = csl::fnd::Singleton<app::mp::MultiplayerManager>::GetInstance()->GetSession();
     const PlayerType type = player->blackBoard->playerNo == 0 ? PlayerType::LOCAL : PlayerType::REMOTE;
 
     if (session->getPlayer(type) != player)
@@ -52,17 +52,19 @@ HOOK(void, __fastcall, PlayerUpdate, ASLR(0x852820), CPlayer* This, void* Edx, S
 
 HOOK(void*, __fastcall, GameTick, ASLR(0x4AC3A0), void* This, void* Edx, void* application)
 {
-    session->preUpdate();
+    auto* mulMan = csl::fnd::Singleton<app::mp::MultiplayerManager>::GetInstance();
+    mulMan->PreUpdate();
 
     void* result = originalGameTick(This, Edx, application);
     
-    session->postUpdate();
+    mulMan->PostUpdate();
 
     return result;
 }
 
 HOOK(void*, __fastcall, SendMessageImm, ASLR(0x49A470), void* This, void* Edx, uint32_t to, xgame::Message* message)
 {
+    auto& session = csl::fnd::Singleton<app::mp::MultiplayerManager>::GetInstance()->GetSession();
     if (session->getPlayer(PlayerType::LOCAL)->gap8 == This)
     {
         if (message->ID == 0x4001)
@@ -72,7 +74,7 @@ HOOK(void*, __fastcall, SendMessageImm, ASLR(0x49A470), void* This, void* Edx, u
             if (listener)
             {
                 auto kickEvent = session->getPool()->allocate<MsgDamageEvent>();
-                kickEvent->damagedObject = listener->GetAdapter()->GetObjectResource()->ref().GetID();
+                kickEvent->damagedObject = listener->GetAdapter()->GetObjectResource()->GetID();
                 session->sendMessage(kickEvent);
             }
         }
@@ -91,34 +93,8 @@ extern "C" void __declspec(dllexport) __cdecl Init(ModInfo* modInfo)
     INSTALL_HOOK(PlayerUpdate);
     INSTALL_HOOK(GameTick);
     INSTALL_HOOK(SendMessageImm);
-
-    std::string dir = modInfo->CurrentMod->Path;
-
-    size_t pos = dir.find_last_of("\\/");
+    app::mp::MultiplayerManager::ms_BaseDir = modInfo->CurrentMod->Path;
+    size_t pos = app::mp::MultiplayerManager::ms_BaseDir.find_last_of("\\/");
     if (pos != std::string::npos)
-        dir.erase(pos + 1);
-
-    INIReader* reader = new INIReader("LWMP.ini");
-    if (reader->ParseError() != 0)
-        delete reader, reader = new INIReader(dir + "LWMP.ini");
-
-    if (reader->ParseError() != 0)
-        MessageBox(NULL, TEXT("Failed to parse LWMP.ini"), NULL, MB_ICONERROR);
-
-    const Address address = Address::fromHostName(reader->Get("Main", "IP", "localhost").c_str(), reader->GetInteger("Main", "Port", 42069));
-
-    // printf("[LWMP] %d.%d.%d.%d:%d\n", address.numbers[0], address.numbers[1], address.numbers[2], address.numbers[3], address.port);
-
-    session = std::make_unique<Session>();
-    if (reader->GetBoolean("Main", "IsHost", true))
-    {
-        session->openServer(address.port);
-    }
-    else
-    {
-        session->openClient(address);
-        session->requestMessage<MsgHandleConnectRequest>();
-    }
-
-    delete reader;
+        app::mp::MultiplayerManager::ms_BaseDir.erase(pos + 1);
 }

@@ -119,6 +119,8 @@
     <ClInclude Include="Client.h" />
     <ClInclude Include="MessageSender.h" />
     <ClInclude Include="MessageStream.h" />
+    <ClInclude Include="MultiplayerManager.h" />
+    <ClInclude Include="MultiplayerService.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketHandler.h" />
     <ClInclude Include="PacketReceiver.h" />
@@ -150,6 +152,8 @@
     <ClCompile Include="MessageStream.cpp" />
     <ClCompile Include="Mod.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="MultiplayerManager.cpp" />
+    <ClCompile Include="MultiplayerService.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="PacketHandler.cpp" />
     <ClCompile Include="PacketReceiver.cpp" />
