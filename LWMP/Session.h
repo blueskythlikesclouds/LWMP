@@ -15,6 +15,11 @@ class Socket;
 struct Message;
 struct MessageInfo;
 
+namespace app::mp
+{
+    class SessionListener;
+}
+
 class Session
 {
     std::chrono::system_clock::time_point lastUpdate;
@@ -34,7 +39,8 @@ class Session
     std::unique_ptr<MessageSender> messageSender;
 
     std::array<std::unique_ptr<PlayerHandler>, 2> players;
-
+    std::vector<app::mp::SessionListener*> listeners;
+	
     void createHandlers();
 
 public:
@@ -76,5 +82,17 @@ public:
     void sendMessage(const std::shared_ptr<T>& message) const
     {
         sendMessage(&T::INFO, std::reinterpret_pointer_cast<T>(message));
+    }
+
+    void addListener(app::mp::SessionListener& rListener);
+
+	void removeListener(app::mp::SessionListener& pListener)
+    {
+        listeners.erase(std::remove(listeners.begin(), listeners.end(), &pListener));
+    }
+
+	bool isConnect() const
+    {
+        return isConnected;
     }
 };

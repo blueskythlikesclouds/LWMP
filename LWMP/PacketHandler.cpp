@@ -5,14 +5,19 @@ PacketHandler::PacketHandler(const std::shared_ptr<Socket>& socket) : socket(soc
     thread = std::thread([this]()
     {
         while (!stop)
+        {
             update();
+            Sleep(10); // was wondering why my cpu was crying
+        }
     });
 }
 
 PacketHandler::~PacketHandler()
 {
     stop = true;
-    thread.join();
+	// Keeping this causes the game to not exit for some reason?
+    // TODO: Check why
+    //thread.join();
 }
 
 std::unique_lock<std::mutex> PacketHandler::lock()

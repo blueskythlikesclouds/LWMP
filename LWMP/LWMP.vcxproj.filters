@@ -99,6 +99,11 @@
     <ClInclude Include="LostCodeLoader.h" />
     <ClInclude Include="MultiplayerService.h" />
     <ClInclude Include="MultiplayerManager.h" />
+    <ClInclude Include="MultiplayerSonic.h" />
+    <ClInclude Include="MultiplayerSonicInfo.h" />
+    <ClInclude Include="SessionListener.h">
+      <Filter>Mod</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
@@ -177,6 +182,11 @@
     </ClCompile>
     <ClCompile Include="MultiplayerService.cpp" />
     <ClCompile Include="MultiplayerManager.cpp" />
+    <ClCompile Include="MultiplayerSonic.cpp" />
+    <ClCompile Include="MultiplayerSonicInfo.cpp" />
+    <ClCompile Include="SessionListener.cpp">
+      <Filter>Mod</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Network">

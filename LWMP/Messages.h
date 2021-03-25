@@ -23,39 +23,52 @@ struct MsgHandleConnectRequest : Message
     };
 
     Reply reply;
+    uint8_t playerNum;
 
     DEFINE_MESSAGE_INFO()
 };
 
-struct MsgSetPosition : Message
+struct MsgDisconnect : Message
+{
+    uint8_t dummy;
+	
+	DEFINE_MESSAGE_INFO()
+};
+
+struct MsgPlayerBase : Message
+{
+	
+};
+
+struct MsgSetPosition : MsgPlayerBase
 {
     Vector3 position;
 
     DEFINE_MESSAGE_INFO()
 };
 
-struct MsgSetRotation : Message
+struct MsgSetRotation : MsgPlayerBase
 {
     Quaternion rotation;
 
     DEFINE_MESSAGE_INFO()
 };
 
-struct MsgSetBodyMode : Message
+struct MsgSetBodyMode : MsgPlayerBase
 {
     VarUInt bodyMode;
 
     DEFINE_MESSAGE_INFO()
 };
 
-struct MsgSetAnimation : Message
+struct MsgSetAnimation : MsgPlayerBase
 {
     VarUInt animationIndex;
 
     DEFINE_MESSAGE_INFO()
 };
 
-struct MsgSetAnimationFrame : Message
+struct MsgSetAnimationFrame : MsgPlayerBase
 {
     VarUInt animationFrameIntegral;
     uint8_t animationFrameFractional;
@@ -63,14 +76,14 @@ struct MsgSetAnimationFrame : Message
     DEFINE_MESSAGE_INFO()
 };
 
-struct MsgSetRingCount : Message
+struct MsgSetRingCount : MsgPlayerBase
 {
     VarUInt ringCount;
 
     DEFINE_MESSAGE_INFO()
 };
 
-struct MsgDamageEvent : Message
+struct MsgDamageEvent : MsgPlayerBase
 {
     VarUInt damagedObject;
 

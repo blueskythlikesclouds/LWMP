@@ -121,6 +121,8 @@
     <ClInclude Include="MessageStream.h" />
     <ClInclude Include="MultiplayerManager.h" />
     <ClInclude Include="MultiplayerService.h" />
+    <ClInclude Include="MultiplayerSonic.h" />
+    <ClInclude Include="MultiplayerSonicInfo.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketHandler.h" />
     <ClInclude Include="PacketReceiver.h" />
@@ -129,6 +131,7 @@
     <ClInclude Include="Pch.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="Session.h" />
+    <ClInclude Include="SessionListener.h" />
     <ClInclude Include="Sink.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="Types.h" />
@@ -154,6 +157,8 @@
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="MultiplayerManager.cpp" />
     <ClCompile Include="MultiplayerService.cpp" />
+    <ClCompile Include="MultiplayerSonic.cpp" />
+    <ClCompile Include="MultiplayerSonicInfo.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="PacketHandler.cpp" />
     <ClCompile Include="PacketReceiver.cpp" />
@@ -165,6 +170,7 @@
     </ClCompile>
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="Session.cpp" />
+    <ClCompile Include="SessionListener.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WinSocket.cpp" />

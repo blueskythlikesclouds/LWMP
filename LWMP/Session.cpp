@@ -8,6 +8,7 @@
 #include "PlayerHandler.h"
 #include "Server.h"
 #include "Session.h"
+#include "SessionListener.h"
 
 void Session::createHandlers()
 {
@@ -56,16 +57,29 @@ void Session::preUpdate()
     {
         timedOut = false;
         lastUpdate = std::chrono::system_clock::now();
-        for (MessageRequest request : getReceivedRequests()) 
+        for (MessageRequest request : getReceivedRequests())
         {
-            if (request.isOfType<MsgHandleConnectRequest>())
+            //if (request.isOfType<MsgHandleConnectRequest>())
+            //{
+            //    auto connectRequest = pool->allocate<MsgHandleConnectRequest>();
+            //    connectRequest->reply = MsgHandleConnectRequest::Reply::ACCEPTED;
+            //    setRemoteAddress(request.getAddress());
+            //    sendMessage(connectRequest);
+            //}
+
+            for (auto& listener : listeners)
             {
-                auto connectRequest = pool->allocate<MsgHandleConnectRequest>();
-                connectRequest->reply = MsgHandleConnectRequest::Reply::ACCEPTED;
-                setRemoteAddress(request.getAddress());
-                sendMessage(connectRequest);
+                listener->OnMessageRequested(request);
             }
         }
+
+    	for (auto& message : messageReceiver->getMessages())
+    	{
+    		for (auto& listener : listeners)
+    		{
+                listener->OnMessageReceived(message);
+    		}
+    	}
     }
 }
 
@@ -141,4 +155,10 @@ void Session::requestMessage(const MessageInfo* info) const
 void Session::sendMessage(const MessageInfo* info, const std::shared_ptr<Message>& message) const
 {
     messageSender->send(info, message, remoteAddress);
+}
+
+void Session::addListener(app::mp::SessionListener& rListener)
+{
+    rListener.m_pOwner = this;
+    listeners.push_back(&rListener);
 }
