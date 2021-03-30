@@ -8,23 +8,26 @@ enum class PlayerType
     REMOTE
 };
 
-struct PlayerData
+namespace app::mp
 {
-    Vector3 position;
-    Quaternion rotation;
-    uint32_t bodyMode;
-    double animationFrame;
-    const char* animationName;
-    uint32_t ringCount;
-};
+    struct PlayerData
+    {
+        csl::math::Vector3 position;
+        csl::math::Quaternion rotation;
+        uint32_t bodyMode;
+        float animationFrame;
+        const char* animationName;
+        uint32_t ringCount;
+    };
+}
 
 class PlayerHandler
 {
     PlayerType type;
 
-    PlayerData previous;
-    PlayerData current;
-    PlayerData local;
+    app::mp::PlayerData previous;
+    app::mp::PlayerData current;
+    app::mp::PlayerData local;
 
     CPlayer* player;
     

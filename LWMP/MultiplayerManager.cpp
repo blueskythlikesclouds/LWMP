@@ -1,18 +1,33 @@
 #include "Pch.h"
 #include "Messages.h"
 #include "MultiplayerManager.h"
-
 #include "MemoryPool.h"
 #include "MessageData.h"
 #include "MessageRequest.h"
 #include "MultiplayerService.h"
+#include "MultiplayerSonic.h"
 
 #undef CreateService
+#undef SendMessage
 
 HOOK(void, __fastcall, GameModeStageInitFirstHook, ASLR(0x00916DD0), void* ecx)
 {
 	originalGameModeStageInitFirstHook(ecx);
 	app::GameDocument::GetSingleton()->CreateService<app::mp::MultiplayerService>();
+}
+
+HOOK(void, __cdecl, RegisterResourceInfosHook, ASLR(0x008F73F0), app::GameDocument* pDocument, void* resInfo, csl::fnd::IAllocator& alloc)
+{
+	struct ResourceInfo
+	{
+        void* m_Unk1;
+        size_t m_LoadFlags;
+	};
+
+	// Force the game to always load super
+    static_cast<ResourceInfo*>(resInfo)->m_LoadFlags |= 8;
+    app::mp::MultiplayerSonic::SetupInfo(*pDocument);
+    originalRegisterResourceInfosHook(pDocument, resInfo, alloc);
 }
 
 namespace app::mp
@@ -36,8 +51,6 @@ namespace app::mp
         address = Address::fromHostName(reader->Get("Main", "IP", "localhost").c_str(), reader->GetInteger("Main", "Port", 42069));
         isHost = reader->GetBoolean("Main", "IsHost", true);
         delete reader;
-
-        // printf("[LWMP] %d.%d.%d.%d:%d\n", address.numbers[0], address.numbers[1], address.numbers[2], address.numbers[3], address.port);
 #else
         const auto result = MessageBoxA(NULL, "Are you the host?", "LWMP", MB_YESNO);
         isHost = result == IDYES;
@@ -53,15 +66,29 @@ namespace app::mp
             m_spSession->requestMessage<MsgHandleConnectRequest>();
         }
         m_spSession->addListener(*this);
+
+        xgame::MsgNotifyObjectEvent event{0};
+        SendMessage(GetID(), event);
 	}
 
 	MultiplayerManager::~MultiplayerManager()
 	{
+        Singleton<font::FontManager>::GetInstance()->DbgRemoveFontText(m_pDebugFont.get());
 		if (m_spSession->isConnect())
 		{
             m_spSession->sendMessage(m_spSession->getPool()->allocate<MsgDisconnect>());
             m_spSession->postUpdate();
 		}
+	}
+
+	bool MultiplayerManager::ProcessMessage(fnd::Message& msg)
+	{
+        //m_pDebugFont = new font::FontText(Singleton<font::FontManager>::GetInstance()->GetDbgFont(), GetAllocator());
+        //const csl::math::Vector2 textPos{ 20, 10 };
+        //m_pDebugFont->AddString(textPos, "[LWMP] Init");
+        //Singleton<font::FontManager>::GetInstance()->DbgAddFontText(m_pDebugFont.get());
+		
+        return true;
 	}
 
 	bool MultiplayerManager::OnMessageRequested(const MessageRequest& request)
@@ -79,8 +106,10 @@ namespace app::mp
         	
             connectResponse->reply = MsgHandleConnectRequest::Reply::ACCEPTED;
             connectResponse->playerNum = ++m_PlayerCount;
-            m_pOwner->sendMessage(connectResponse);
             m_pOwner->setRemoteAddress(request.getAddress());
+            m_pOwner->sendMessage(connectResponse);
+            m_ConnectedCallback(connectResponse->playerNum);
+        	
             return true;
         }
 		
@@ -91,6 +120,8 @@ namespace app::mp
 	{
 		if (message.isOfType<MsgDisconnect>())
 		{
+            DEBUG_PRINT("Recieved disconnection message.\n");
+            m_DisconnectedCallback(m_PlayerCount);
             m_PlayerCount--;
             return true;
 		}
@@ -100,7 +131,8 @@ namespace app::mp
             if (connectRequest->reply == MsgHandleConnectRequest::Reply::ACCEPTED)
             {
                 m_pOwner->setRemoteAddress(message.getAddress());
-                DEBUG_PRINT("Connected to host. :)\n");
+                m_ConnectedCallback(++m_PlayerCount);
+            	DEBUG_PRINT("Connected to host. :)\n");
             }
 			else
             {
@@ -116,6 +148,7 @@ namespace app::mp
 	void* MultiplayerManager::MultiplayerManager_init()
     {
         INSTALL_HOOK(GameModeStageInitFirstHook);
+        INSTALL_HOOK(RegisterResourceInfosHook);
         return new(game::GlobalAllocator::GetSingletonAllocator()) MultiplayerManager();
     }
 

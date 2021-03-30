@@ -103,6 +103,8 @@
     <ClInclude Include="BitWriter.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Globals.h" />
+    <ClInclude Include="GOCCollection.h" />
+    <ClInclude Include="goc_PlayerShadow.h" />
     <ClInclude Include="INIReader.h" />
     <ClInclude Include="LostCodeLoader.h" />
     <ClInclude Include="Math.h" />
@@ -127,8 +129,10 @@
     <ClInclude Include="PacketHandler.h" />
     <ClInclude Include="PacketReceiver.h" />
     <ClInclude Include="PacketSender.h" />
+    <ClInclude Include="PlayerGOCReferenceHolder.h" />
     <ClInclude Include="PlayerHandler.h" />
     <ClInclude Include="Pch.h" />
+    <ClInclude Include="PlayerVisual.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="SessionListener.h" />
@@ -136,6 +140,7 @@
     <ClInclude Include="Socket.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="VarInt.h" />
+    <ClInclude Include="VisualGOC.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WinSocket.h" />
   </ItemGroup>

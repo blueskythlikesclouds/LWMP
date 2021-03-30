@@ -29,19 +29,19 @@ void PlayerHandler::update(const Session& session)
 		current.animationName = getCurrentAnimationName(animationScript->characterAnimationSingle);
 		current.ringCount = player->blackBoard->ringParameter->ringCount;
 
-		if (previous.position != current.position)
+		/*if (previous.position != current.position)
 		{
 			auto msgSetPosition = session.getPool()->allocate<MsgSetPosition>();
 			msgSetPosition->position = current.position;
 			session.sendMessage(msgSetPosition);
-		}
+		}*/
 
-		if (previous.rotation != current.rotation)
-		{
-			auto msgSetRotation = session.getPool()->allocate<MsgSetRotation>();
-			msgSetRotation->rotation = current.rotation;
-			session.sendMessage(msgSetRotation);
-		}
+		//if (previous.rotation != current.rotation)
+		//{
+		//	auto msgSetRotation = session.getPool()->allocate<MsgSetRotation>();
+		//	msgSetRotation->rotation = current.rotation;
+		//	session.sendMessage(msgSetRotation);
+		//}
 
 		if (previous.bodyMode != current.bodyMode)
 		{

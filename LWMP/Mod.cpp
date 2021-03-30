@@ -90,9 +90,9 @@ extern "C" void __declspec(dllexport) __cdecl Init(ModInfo* modInfo)
         return;
     }
 
-    INSTALL_HOOK(PlayerUpdate);
+    //INSTALL_HOOK(PlayerUpdate);
     INSTALL_HOOK(GameTick);
-    INSTALL_HOOK(SendMessageImm);
+    //INSTALL_HOOK(SendMessageImm);
     app::mp::MultiplayerManager::ms_BaseDir = modInfo->CurrentMod->Path;
     size_t pos = app::mp::MultiplayerManager::ms_BaseDir.find_last_of("\\/");
     if (pos != std::string::npos)

@@ -52,7 +52,7 @@ void Session::preUpdate()
 {
     messageReceiver->update();
     isConnected = socket->isConnected();
-
+	
     if (messageReceiver->hasData())
     {
         timedOut = false;
@@ -67,18 +67,20 @@ void Session::preUpdate()
             //    sendMessage(connectRequest);
             //}
 
-            for (auto& listener : listeners)
+            for (size_t i = 0; i < listeners.size(); i++)
             {
+	            auto listener = listeners[i];
                 listener->OnMessageRequested(request);
             }
         }
 
     	for (auto& message : messageReceiver->getMessages())
     	{
-    		for (auto& listener : listeners)
-    		{
+            for (size_t i = 0; i < listeners.size(); i++)
+            {
+                auto listener = listeners[i];
                 listener->OnMessageReceived(message);
-    		}
+            }
     	}
     }
 }

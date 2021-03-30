@@ -25,6 +25,11 @@
 
 // LWAPI
 #include <Sonic2013.h>
+#include "GOCCollection.h"
+#include "PlayerGOCReferenceHolder.h"
+#include "PlayerVisual.h"
+#include "VisualGOC.h"
+#include "goc_PlayerShadow.h"
 
 // boost
 #include <boost/preprocessor.hpp>

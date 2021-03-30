@@ -97,13 +97,26 @@
     </ClInclude>
     <ClInclude Include="INIReader.h" />
     <ClInclude Include="LostCodeLoader.h" />
-    <ClInclude Include="MultiplayerService.h" />
-    <ClInclude Include="MultiplayerManager.h" />
-    <ClInclude Include="MultiplayerSonic.h" />
-    <ClInclude Include="MultiplayerSonicInfo.h" />
     <ClInclude Include="SessionListener.h">
       <Filter>Mod</Filter>
     </ClInclude>
+    <ClInclude Include="MultiplayerManager.h">
+      <Filter>Mod\Multiplayer</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiplayerService.h">
+      <Filter>Mod\Multiplayer</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiplayerSonic.h">
+      <Filter>Mod\Multiplayer</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiplayerSonicInfo.h">
+      <Filter>Mod\Multiplayer</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerGOCReferenceHolder.h" />
+    <ClInclude Include="GOCCollection.h" />
+    <ClInclude Include="VisualGOC.h" />
+    <ClInclude Include="goc_PlayerShadow.h" />
+    <ClInclude Include="PlayerVisual.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
@@ -180,12 +193,20 @@
     <ClCompile Include="PlayerHandler.cpp">
       <Filter>Mod</Filter>
     </ClCompile>
-    <ClCompile Include="MultiplayerService.cpp" />
-    <ClCompile Include="MultiplayerManager.cpp" />
-    <ClCompile Include="MultiplayerSonic.cpp" />
-    <ClCompile Include="MultiplayerSonicInfo.cpp" />
     <ClCompile Include="SessionListener.cpp">
       <Filter>Mod</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiplayerManager.cpp">
+      <Filter>Mod\Multiplayer</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiplayerService.cpp">
+      <Filter>Mod\Multiplayer</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiplayerSonic.cpp">
+      <Filter>Mod\Multiplayer</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiplayerSonicInfo.cpp">
+      <Filter>Mod\Multiplayer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -221,6 +242,9 @@
     </Filter>
     <Filter Include="Messages\IO">
       <UniqueIdentifier>{18f905a3-86e8-44cd-9534-52bd76d46738}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mod\Multiplayer">
+      <UniqueIdentifier>{fa65eee5-edbc-4212-85b8-5e1246bb9e57}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

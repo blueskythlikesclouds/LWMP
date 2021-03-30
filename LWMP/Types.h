@@ -12,7 +12,7 @@ typedef struct CPostureMoveManager CPostureMoveManager, *PCPostureMoveManager;
 typedef struct CParameterSpeed CParameterSpeed, *PCParameterSpeed;
 typedef struct CPostureInputManager CPostureInputManager, *PCPostureInputManager;
 typedef struct CStateGOC CStateGOC, *PCStateGOC;
-typedef struct CBlackBoard CBlackBoard, *PCBlackBoard;
+typedef class CBlackBoard CBlackBoard, *PCBlackBoard;
 typedef struct SGroundInfo SGroundInfo, *PSGroundInfo;
 typedef struct CParameterRing CParameterRing, *PCParameterRing;
 typedef struct MoveArray_app__fnd__Handle_app__game__ColliShape_const
@@ -101,6 +101,20 @@ struct alignas(16) Quaternion
     {
         return !(lhs == rhs);
     }
+
+    operator csl::math::Quaternion() const
+    {
+        return csl::math::Quaternion{ x, y, z, w };
+    }
+
+    Quaternion& operator=(const csl::math::Quaternion& quat)
+    {
+        x = quat.x();
+        y = quat.y();
+        z = quat.z();
+        w = quat.w();
+        return *this;
+    }
 };
 
 struct CTimerCounterList
@@ -132,6 +146,19 @@ struct alignas(16) Vector3
     friend bool operator!=(const Vector3& lhs, const Vector3& rhs)
     {
         return !(lhs == rhs);
+    }
+
+	operator csl::math::Vector3() const
+    {
+        return csl::math::Vector3{ x, y, z };
+    }
+
+	Vector3& operator=(const csl::math::Vector3& vec)
+    {
+        x = vec.x();
+        y = vec.y();
+        z = vec.z();
+        return *this;
     }
 };
 
@@ -187,13 +214,16 @@ struct CStateGOC
     char gapB8[0x4];
 };
 
-struct CBlackBoard
+class CBlackBoard : public app::fnd::ReferencedObject
 {
-    char gap0[0x20];
-    int bodyMode;
-    int playerNo;
-    CParameterRing* ringParameter;
-    char gap2C[0x1C];
+public:
+    char gap0[0x14]{};
+    int bodyMode{};
+    int playerNo{};
+    CParameterRing* ringParameter{};
+    char gap2C[0x1C]{};
+
+	CBlackBoard() {}
 };
 
 struct SGroundInfo
