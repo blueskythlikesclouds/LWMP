@@ -19,7 +19,8 @@ namespace app::mp
 	protected:
 		std::shared_ptr<Session> m_spSession{};
 		size_t m_PlayerCount{};
-
+		bool m_IsHost{ true };
+		
 	public:
 		inline static std::string ms_BaseDir{};
 		csl::fnd::Delegate<void(size_t playerNum)> m_ConnectedCallback{};

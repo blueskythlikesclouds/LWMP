@@ -89,3 +89,10 @@ struct MsgDamageEvent : MsgPlayerBase
 
     DEFINE_MESSAGE_INFO()
 };
+
+struct MsgStartStage : Message
+{
+    csl::ut::FixedString<16> stageID;
+
+	DEFINE_MESSAGE_INFO()
+};

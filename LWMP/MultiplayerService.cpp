@@ -33,7 +33,12 @@ namespace app::mp
 	void MultiplayerService::StartGame(bool a1)
 	{
 		if (!a1)
+		{
+			const auto msgStart = m_pOwner->getPool()->allocate<MsgStartStage>();
+			msgStart->stageID = ApplicationWin::GetInstance()->GetGame()->GetSequence()->m_StgId.c_str();
+			m_pOwner->sendMessage(msgStart);
 			return;
+		}
 
 		m_Players.clear();
 		m_pLevelInfo = document->GetService<CLevelInfo>();

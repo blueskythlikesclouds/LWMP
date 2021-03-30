@@ -37,7 +37,6 @@ namespace app::mp
         Singleton<fnd::MessageManager>::GetInstance()->Add(this);
 		Singleton<fnd::GameServiceTypeRegistry>::GetInstance()->AddService(MultiplayerService::staticClass());
         m_spSession = std::make_shared<Session>();
-        bool isHost = true;
         Address address = Address::fromHostName("localhost", 42069);
 
 #ifndef _DEBUG
@@ -49,14 +48,14 @@ namespace app::mp
             MessageBox(NULL, TEXT("Failed to parse LWMP.ini"), NULL, MB_ICONERROR);
 
         address = Address::fromHostName(reader->Get("Main", "IP", "localhost").c_str(), reader->GetInteger("Main", "Port", 42069));
-        isHost = reader->GetBoolean("Main", "IsHost", true);
+        m_IsHost = reader->GetBoolean("Main", "IsHost", true);
         delete reader;
 #else
         const auto result = MessageBoxA(NULL, "Are you the host?", "LWMP", MB_YESNO);
-        isHost = result == IDYES;
+        m_IsHost = result == IDYES;
 #endif
 
-        if (isHost)
+        if (m_IsHost)
         {
             m_spSession->openServer(address.port);
         }
@@ -141,6 +140,20 @@ namespace app::mp
 			
             return true;
 		}
+        if (message.isOfType<MsgStartStage>())
+        {
+            if (m_IsHost)
+                return false;
+        	
+            auto* pSeq = ApplicationWin::GetInstance()->GetGame()->GetSequence();
+            if (!pSeq)
+                return false;
+
+            pSeq->m_StgId = message.get<MsgStartStage>()->stageID;
+            pSeq->SeqGotoStage();
+        	
+            return true;
+        }
 		
         return false;
 	}
