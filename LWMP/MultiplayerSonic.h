@@ -39,8 +39,8 @@ namespace app::mp
 	protected:
 		size_t m_PlayerNum{};
 
-		// Please never move this field
-		CGOCCollection<20> m_Components{};
+		// Please never move these fields
+		CGOCCollection<5> m_Components{};
 		Player::CVisualGOC* m_pVisual{};
 		CLevelInfo* m_pLevelInfo{};
 		ut::RefPtr<CPhysicsStub> m_pPhysics{};

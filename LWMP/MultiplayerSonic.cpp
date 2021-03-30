@@ -149,6 +149,7 @@ namespace app::mp
 
 		FUNCTION_PTR(void, __cdecl, fp_RegisterVisualSonicResource, ASLR(0x008FE300), MultiplayerSonic*, Player::GOCReferenceHolder&, uint, bool);
 		FUNCTION_PTR(void, __cdecl, fp_RegisterVisualSpinResource, ASLR(0x008FEA20), MultiplayerSonic*, Player::GOCReferenceHolder&, uint, uint, bool);
+		FUNCTION_PTR(void, __cdecl, fp_RegisterPhantomSpinResource, ASLR(0x008FD8F0), MultiplayerSonic*, Player::GOCReferenceHolder&, uint, bool);
 		
 		const VisualResourceInfo resInfos[] =
 		{
@@ -170,6 +171,8 @@ namespace app::mp
 
 		fp_RegisterVisualSonicResource(this, pCollector->GetHolder(Player::BodyMode::Human), 0, false);
 		fp_RegisterVisualSpinResource(this, pCollector->GetHolder(Player::BodyMode::Spin), 0, 0, true);
+		if (pContainer->IsRegister("PhantomSpinInfo"))
+			fp_RegisterPhantomSpinResource(this, pCollector->GetHolder(Player::BodyMode::PhantomSpin), 0, true);
 		
 		for (auto& info : resInfos)
 		{
