@@ -5,7 +5,7 @@
 #include "Messages.h"
 #include "PacketReceiver.h"
 #include "PacketSender.h"
-#include "PlayerHandler.h"
+#include "PlayerData.h"
 #include "Server.h"
 #include "Session.h"
 #include "SessionListener.h"
@@ -128,25 +128,6 @@ const std::vector<MessageRequest>& Session::getReceivedRequests() const
 const std::vector<MessageData>& Session::getReceivedMessages() const
 {
     return messageReceiver->getMessages();
-}
-
-void Session::updatePlayer(PlayerType type) const
-{
-    PlayerHandler* handler = players[(uint32_t)type].get();
-
-    if (handler)
-        handler->update(*this);
-}
-
-CPlayer* Session::getPlayer(PlayerType type) const
-{
-    PlayerHandler* handler = players[(uint32_t)type].get();
-    return handler ? handler->getPlayer() : nullptr;
-}
-
-void Session::setPlayer(PlayerType type, CPlayer* player)
-{
-    players[(uint32_t)type] = player ? std::make_unique<PlayerHandler>(type, player) : nullptr;
 }
 
 void Session::requestMessage(const MessageInfo* info) const

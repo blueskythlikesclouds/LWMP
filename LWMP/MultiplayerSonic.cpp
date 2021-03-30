@@ -6,7 +6,7 @@
 #include "MultiplayerManager.h"
 #include "Animations.h"
 #include "MultiplayerService.h"
-#include "PlayerHandler.h"
+#include "PlayerData.h"
 
 namespace app::mp
 {
@@ -25,11 +25,6 @@ namespace app::mp
 		if (!pContainer)
 			return;
 		
-		auto* pInfo = reinterpret_cast<MultiplayerSonicInfo*>(pContainer->GetInfo("MultiplayerSonicInfo"));
-
-		if (!pInfo)
-			return;
-
 		GOComponent::Create<GOCVisualContainer>(*this);
 		GOComponent::Create<game::GOCAnimationContainer>(*this);
 		GOComponent::Create<game::GOCIKConstraint>(*this);

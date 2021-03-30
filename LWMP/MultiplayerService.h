@@ -1,10 +1,9 @@
 #pragma once
 #include "SessionListener.h"
-#include "PlayerHandler.h"
+#include "PlayerData.h"
 
 namespace app::mp
 {
-	struct PlayerData;
 	class MultiplayerSonic;
 	class MultiplayerManager;
 

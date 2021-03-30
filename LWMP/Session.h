@@ -38,7 +38,6 @@ class Session
     std::unique_ptr<MessageReceiver> messageReceiver;
     std::unique_ptr<MessageSender> messageSender;
 
-    std::array<std::unique_ptr<PlayerHandler>, 2> players;
     std::vector<app::mp::SessionListener*> listeners;
 	
     void createHandlers();
@@ -54,8 +53,6 @@ public:
     void preUpdate();
     void postUpdate();
 
-    void updatePlayer(PlayerType type) const;
-
     const std::shared_ptr<Socket>& getSocket() const;
 
     Address getRemoteAddress() const;
@@ -65,9 +62,6 @@ public:
 
     const std::vector<MessageRequest>& getReceivedRequests() const;
     const std::vector<MessageData>& getReceivedMessages() const;
-
-    CPlayer* getPlayer(PlayerType type) const;
-    void setPlayer(PlayerType type, CPlayer* player);
 
     void requestMessage(const MessageInfo* info) const;
     void sendMessage(const MessageInfo* info, const std::shared_ptr<Message>& message) const;

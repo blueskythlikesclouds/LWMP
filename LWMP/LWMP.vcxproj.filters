@@ -89,9 +89,6 @@
     </ClInclude>
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Pch.h" />
-    <ClInclude Include="PlayerHandler.h">
-      <Filter>Mod</Filter>
-    </ClInclude>
     <ClInclude Include="Globals.h">
       <Filter>LostWorld</Filter>
     </ClInclude>
@@ -117,6 +114,9 @@
     <ClInclude Include="VisualGOC.h" />
     <ClInclude Include="goc_PlayerShadow.h" />
     <ClInclude Include="PlayerVisual.h" />
+    <ClInclude Include="PlayerData.h">
+      <Filter>Mod\Multiplayer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
@@ -189,9 +189,6 @@
     <ClCompile Include="Pch.cpp" />
     <ClCompile Include="Animations.cpp">
       <Filter>LostWorld</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerHandler.cpp">
-      <Filter>Mod</Filter>
     </ClCompile>
     <ClCompile Include="SessionListener.cpp">
       <Filter>Mod</Filter>

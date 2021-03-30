@@ -129,8 +129,8 @@
     <ClInclude Include="PacketHandler.h" />
     <ClInclude Include="PacketReceiver.h" />
     <ClInclude Include="PacketSender.h" />
+    <ClInclude Include="PlayerData.h" />
     <ClInclude Include="PlayerGOCReferenceHolder.h" />
-    <ClInclude Include="PlayerHandler.h" />
     <ClInclude Include="Pch.h" />
     <ClInclude Include="PlayerVisual.h" />
     <ClInclude Include="Server.h" />
@@ -168,7 +168,6 @@
     <ClCompile Include="PacketHandler.cpp" />
     <ClCompile Include="PacketReceiver.cpp" />
     <ClCompile Include="PacketSender.cpp" />
-    <ClCompile Include="PlayerHandler.cpp" />
     <ClCompile Include="Pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
