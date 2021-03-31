@@ -25,10 +25,28 @@ namespace app::Player
 	struct SVisualCinfo
 	{
 		float m_Unk1{};
-		INSERT_PADDING(76);
+		INSERT_PADDING(76){};
 		size_t m_PlayerNum{ 0 };
 	};
 
+	class CVisualGOC;
+	class CVisualLocater;
+	
+	class CVisualLocaterManager : public fnd::ReferencedObject
+	{
+	public:
+		CVisualGOC* m_pVisual{};
+		CVisualLocater* m_pLocater{};
+		INSERT_PADDING(0x14C) {};
+		csl::math::Matrix34 m_Transform{};
+		INSERT_PADDING(16){};
+		
+		CVisualLocaterManager()
+		{
+			
+		}
+	};
+	
 	class CVisualGOC : public CGOComponent
 	{
 	public:
@@ -49,7 +67,8 @@ namespace app::Player
 		csl::ut::ObjectMoveArray<ut::RefPtr<CPlayerVisual>> m_Visuals{ GetAllocator() };
 		ut::RefPtr<CPlayerVisual> m_rpCurrentVisual{};
 		ut::RefPtr<CPlayerVisual> m_rpHumanVisual{};
-		INSERT_PADDING(12) {};
+		ut::RefPtr<CVisualLocaterManager> m_rpLocatorManager{};
+		INSERT_PADDING(8) {};
 		
 		static const char* staticID()
 		{
@@ -87,13 +106,23 @@ namespace app::Player
 		{
 			return m_rpCurrentVisual.get();
 		}
+
+		void SetHumanVisual(CPlayerVisual* pVisual)
+		{
+			m_rpHumanVisual = pVisual;
+		}
 		
 		void ChangeVisual(BodyMode mode)
 		{
 #define MODE_CASE(MODE) case MODE: ChangeVisual<MODE>(); break;
 			switch (mode)
 			{
-				MODE_CASE(Human)
+			case Human :
+				{
+					ChangeVisual<Human>();
+					SetHumanVisual(GetCurrentVisual());
+					break;
+				}
 				MODE_CASE(Spin)
 				MODE_CASE(SuperSonic)
 				MODE_CASE(PhantomSpin)

@@ -108,24 +108,31 @@ namespace app::mp
 		}
 
 		auto& localData = m_PlayersData[0];
-		auto* pTransform = m_SonicHandle->GetComponent<fnd::GOCTransform>();
-		if (localData.position != pTransform->GetLocalPosition())
-		{
-			localData.position = pTransform->GetLocalPosition();
-			auto msgSetPos = m_pOwner->getPool()->allocate<MsgSetPosition>();
-			msgSetPos->position = localData.position;
-			m_pOwner->sendMessage(msgSetPos);
-		}
-
-		if (localData.rotation != pTransform->GetLocalRotation())
-		{
-			localData.rotation = pTransform->GetLocalRotation();
-			auto msgSetRot = m_pOwner->getPool()->allocate<MsgSetRotation>();
-			msgSetRot->rotation = localData.rotation;
-			m_pOwner->sendMessage(msgSetRot);
-		}
-
 		auto* pVisual = m_SonicHandle->m_Components.GetGOC<Player::CVisualGOC>();
+		auto* pLocaterMan = pVisual ? pVisual->m_rpLocatorManager.get() : nullptr;
+		
+		if (pVisual && pLocaterMan)
+		{
+			const csl::math::Vector3 position = pLocaterMan->m_Transform.GetTransVector();
+			const csl::math::Quaternion rotation(pLocaterMan->m_Transform);
+
+			if (localData.position != position)
+			{
+				localData.position = position;
+				auto msgSetPos = m_pOwner->getPool()->allocate<MsgSetPosition>();
+				msgSetPos->position = localData.position;
+				m_pOwner->sendMessage(msgSetPos);
+			}
+
+			if (localData.rotation != rotation)
+			{
+				localData.rotation = rotation;
+				auto msgSetRot = m_pOwner->getPool()->allocate<MsgSetRotation>();
+				msgSetRot->rotation = localData.rotation;
+				m_pOwner->sendMessage(msgSetRot);
+			}
+		}
+
 		if (pVisual && pVisual->GetCurrentVisual() && pVisual->GetCurrentVisual()->m_pGOCHolder)
 		{
 			auto& rUnit = pVisual->GetCurrentVisual()->m_pGOCHolder->GetUnit(0);

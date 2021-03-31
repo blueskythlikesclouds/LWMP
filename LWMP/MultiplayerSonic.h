@@ -61,7 +61,7 @@ namespace app::mp
 			SetObjectCategory(12);
 		}
 
-		static bool SetupInfo(GameDocument& document);
+		static bool SetupInfo(GameDocument& document, csl::fnd::IAllocator* pAllocator);
 
 		void RegisterResources(GameDocument& document);
 		void AddCallback(GameDocument& document) override;

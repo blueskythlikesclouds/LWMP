@@ -23,7 +23,9 @@ namespace app::Player
 		INSERT_PADDING(8){};
 		float m_GravitySize{ 1 };
 		INSERT_PADDING(8) {};
-		csl::math::Vector3 m_Down{ 0, -1, 0 };
+
+		// Calculate this properly
+		csl::math::Vector3 m_Down{ 0, 0, -1 };
 		INSERT_PADDING(96){};
 		
 		GravityController()

@@ -26,7 +26,7 @@ HOOK(void, __cdecl, RegisterResourceInfosHook, ASLR(0x008F73F0), app::GameDocume
 
 	// Force the game to always load super
     static_cast<ResourceInfo*>(resInfo)->m_LoadFlags |= 8;
-    app::mp::MultiplayerSonic::SetupInfo(*pDocument);
+    app::mp::MultiplayerSonic::SetupInfo(*pDocument, &alloc);
     originalRegisterResourceInfosHook(pDocument, resInfo, alloc);
 }
 

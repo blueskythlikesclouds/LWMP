@@ -17,6 +17,7 @@ namespace app::mp
 		m_pPhysics = new(GetAllocator()) CPhysicsStub();
 		m_pBlackboard = new(GetAllocator()) CBlackBoard();
 		m_pBlackboard->playerNo = 0;
+		m_pBlackboard->bodyMode = Player::BodyMode::Human;
 		
 		m_pLevelInfo = document.GetService<CLevelInfo>();
 		m_pMpService = document.GetService<MultiplayerService>();
@@ -40,7 +41,6 @@ namespace app::mp
 		m_Components.SetGOC(m_pVisual);
 		m_Components.SetGOC(pEffect);
 
-		pEffect->Initialize();
 		pCollector->Setup(this);
 		RegisterResources(document);
 		
@@ -49,6 +49,7 @@ namespace app::mp
 
 		const Player::SVisualCinfo visInfo{};
 		m_pVisual->Initialize(visInfo);
+		pEffect->Initialize();
 		
 		csl::fnd::Singleton<MultiplayerManager>::GetInstance()->GetSession()->addListener(*this);
 		GOComponent::EndSetup(*this);
@@ -117,7 +118,7 @@ namespace app::mp
 		return true;
 	}
 
-	bool MultiplayerSonic::SetupInfo(GameDocument& document)
+	bool MultiplayerSonic::SetupInfo(GameDocument& document, csl::fnd::IAllocator* pAllocator)
 	{
 		auto* pContainer = document.GetService<CObjInfoContainer>();
 		if (!pContainer)
@@ -126,8 +127,8 @@ namespace app::mp
 		if (pContainer->IsRegister("MultiplayerSonicInfo"))
 			return true;
 
-		auto* pInfo = new (GetAllocator()) MultiplayerSonicInfo();
-		pContainer->Register("MultiplayerSonicInfo", pInfo);
+		auto* pInfo = new (pAllocator) MultiplayerSonicInfo();
+		pContainer->Register(pInfo->GetInfoName(), pInfo);
 		return true;
 	}
 
@@ -165,7 +166,8 @@ namespace app::mp
 			return;
 
 		fp_RegisterVisualSonicResource(this, pCollector->GetHolder(Player::BodyMode::Human), 0, false);
-		fp_RegisterVisualSpinResource(this, pCollector->GetHolder(Player::BodyMode::Spin), 0, 0, true);
+		fp_RegisterVisualSpinResource(this, pCollector->GetHolder(Player::BodyMode::Spin), 0, 1, true);
+
 		if (pContainer->IsRegister("PhantomSpinInfo"))
 			fp_RegisterPhantomSpinResource(this, pCollector->GetHolder(Player::BodyMode::PhantomSpin), 0, true);
 		
