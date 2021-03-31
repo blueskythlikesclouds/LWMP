@@ -31,6 +31,7 @@ namespace app::mp
 			return ms_StaticClass;
 		}
 
+		void Load() override;
 		void ConnectedCallback(size_t playerNum);
 		void DisconnectedCallback(size_t playerNum);
 		bool OnMessageReceived(const MessageData& message) override;

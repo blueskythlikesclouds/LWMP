@@ -33,12 +33,7 @@ namespace app::mp
 	void MultiplayerService::StartGame(bool a1)
 	{
 		if (!a1)
-		{
-			const auto msgStart = m_pOwner->getPool()->allocate<MsgStartStage>();
-			msgStart->stageID = ApplicationWin::GetInstance()->GetGame()->GetSequence()->m_StgId.c_str();
-			m_pOwner->sendMessage(msgStart);
 			return;
-		}
 
 		m_Players.clear();
 		m_pLevelInfo = document->GetService<CLevelInfo>();
@@ -47,6 +42,16 @@ namespace app::mp
 			auto* pSonic = new MultiplayerSonic(i + 1);
 			m_Players.push_back(pSonic);
 			document->AddGameObject(pSonic);
+		}
+	}
+
+	void MultiplayerService::Load()
+	{
+		if (m_pOwner)
+		{
+			const auto msgStart = m_pOwner->getPool()->allocate<MsgStartStage>();
+			msgStart->stageID = ApplicationWin::GetInstance()->GetGame()->GetSequence()->m_StgId.c_str();
+			m_pOwner->sendMessage(msgStart);
 		}
 	}
 
