@@ -2,15 +2,17 @@
 
 struct Message;
 struct MessageInfo;
+struct MsgMetadata;
 
 class MessageData
 {
     const MessageInfo* info;
     std::shared_ptr<Message> message;
     Address address;
+    std::shared_ptr<MsgMetadata> metadata;
 
 public:
-    MessageData(const MessageInfo* info, std::shared_ptr<Message> message, const Address& address);
+    MessageData(const MessageInfo* info, const std::shared_ptr<Message>& message, const Address& address);
 
     const MessageInfo* getInfo() const;
     uint32_t getId() const;
@@ -30,4 +32,7 @@ public:
     }
 
     Address getAddress() const;
+
+    std::shared_ptr<MsgMetadata> getMetadata() const;
+    void setMetadata(const std::shared_ptr<MsgMetadata>& metadata);
 };

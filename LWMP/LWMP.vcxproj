@@ -102,6 +102,7 @@
     <ClInclude Include="BitReader.h" />
     <ClInclude Include="BitWriter.h" />
     <ClInclude Include="Debug.h" />
+    <ClInclude Include="EventHooks.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="GOCCollection.h" />
     <ClInclude Include="goc_PlayerShadow.h" />
@@ -147,6 +148,7 @@
   <ItemGroup>
     <ClCompile Include="Address.cpp" />
     <ClCompile Include="Animations.cpp" />
+    <ClCompile Include="EventHooks.cpp" />
     <ClCompile Include="MemoryPool.cpp" />
     <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="MessageData.cpp" />

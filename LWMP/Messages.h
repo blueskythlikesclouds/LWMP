@@ -7,6 +7,13 @@ struct Message
     uint8_t reserved;
 };
 
+struct MsgMetadata : Message
+{
+    VarUInt playerNum;
+
+    DEFINE_MESSAGE_INFO()
+};
+
 struct MsgDummy : Message
 {
     uint8_t dummy;
@@ -86,6 +93,7 @@ struct MsgSetRingCount : MsgPlayerBase
 struct MsgDamageEvent : MsgPlayerBase
 {
     VarUInt damagedObject;
+    VarUInt damage;
 
     DEFINE_MESSAGE_INFO()
 };

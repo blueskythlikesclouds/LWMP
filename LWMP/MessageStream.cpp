@@ -72,7 +72,7 @@ void MessageStream::readMessages(BitReader& reader, const MessageInfo* info, Mem
             }
         }
 
-        messages.emplace_back(info, std::move(message), address);
+        messages.emplace_back(info, message, address);
     }
 }
 

@@ -1,10 +1,6 @@
-#include "MemoryPool.h"
-#include "MessageData.h"
-#include "Messages.h"
 #include "MultiplayerManager.h"
-#include "Session.h"
-#include "Socket.h"
 #include "WinSocket.h"
+#include "EventHooks.h"
 
 HOOK(void*, __fastcall, GameTick, ASLR(0x4AC3A0), void* This, void* Edx, void* application)
 {
@@ -27,7 +23,9 @@ extern "C" void __declspec(dllexport) __cdecl Init(ModInfo* modInfo)
     }
 
     INSTALL_HOOK(GameTick);
-    app::mp::MultiplayerManager::ms_BaseDir = modInfo->CurrentMod->Path;
+    app::mp::EventHooks::Init();
+	
+	app::mp::MultiplayerManager::ms_BaseDir = modInfo->CurrentMod->Path;
     size_t pos = app::mp::MultiplayerManager::ms_BaseDir.find_last_of("\\/");
     if (pos != std::string::npos)
         app::mp::MultiplayerManager::ms_BaseDir.erase(pos + 1);

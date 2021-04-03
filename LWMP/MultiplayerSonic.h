@@ -6,6 +6,7 @@ struct MsgSetPosition;
 struct MsgSetRotation;
 struct MsgSetAnimation;
 struct MsgSetAnimationFrame;
+struct MsgDamageEvent;
 
 namespace app::mp
 {
@@ -71,5 +72,6 @@ namespace app::mp
 
 	protected:
 		bool ProcMsgSetAnimation(const std::shared_ptr<MsgSetAnimation> spMsg) const;
+		bool ProcMsgDamageEvent(const std::shared_ptr<MsgDamageEvent> spMsg) const;
 	};
 }

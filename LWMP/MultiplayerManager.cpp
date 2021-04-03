@@ -62,7 +62,7 @@ namespace app::mp
         else
         {
             m_spSession->openClient(address);
-            m_spSession->requestMessage<MsgHandleConnectRequest>();
+            m_spSession->requestMessage<MsgHandleConnectRequest>(address);
         }
         m_spSession->addListener(*this);
 
@@ -99,7 +99,7 @@ namespace app::mp
             {
                 connectResponse->reply = MsgHandleConnectRequest::Reply::DENIED;
                 connectResponse->playerNum = -1;
-            	m_pOwner->sendMessage(connectResponse);
+            	m_pOwner->sendMessage(connectResponse, request.getAddress());
                 return true;
             }
         	
@@ -131,6 +131,8 @@ namespace app::mp
             {
                 m_pOwner->setRemoteAddress(message.getAddress());
                 m_ConnectedCallback(++m_PlayerCount);
+                m_pOwner->setPlayerNum(m_PlayerCount);
+            	
             	DEBUG_PRINT("Connected to host. :)\n");
             }
 			else
@@ -157,7 +159,7 @@ namespace app::mp
 		
         return false;
 	}
-
+	
 	void* MultiplayerManager::MultiplayerManager_init()
     {
         INSTALL_HOOK(GameModeStageInitFirstHook);

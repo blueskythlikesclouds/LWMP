@@ -57,8 +57,23 @@ namespace app::mp
 
 	bool MultiplayerSonic::OnMessageReceived(const MessageData& message)
 	{
+		auto playerNum = -1;
+
+		const auto spMeta = message.getMetadata();
+		if (!spMeta)
+			return false;
+
+		playerNum = spMeta->playerNum;
+		if (playerNum == 0)
+			playerNum = 1;
+
+		if (playerNum != m_PlayerNum)
+			return false;
+		
 		if (message.isOfType<MsgSetAnimation>())
 			return ProcMsgSetAnimation(message.get<MsgSetAnimation>());
+		if (message.isOfType<MsgDamageEvent>())
+			return ProcMsgDamageEvent(message.get<MsgDamageEvent>());
 		if (message.isOfType<MsgSetBodyMode>())
 		{
 			const auto pMsg = message.get<MsgSetBodyMode>();
@@ -76,7 +91,7 @@ namespace app::mp
 		auto* pCollector = GetComponent<Player::GOCCollector>();
 		if (pCollector)
 			pCollector->UpdateChangeRequest();
-		
+
 		m_Components.Update(info.deltaTime);
 	}
 
@@ -115,6 +130,14 @@ namespace app::mp
 			}
 		}
 		
+		return true;
+	}
+
+	bool MultiplayerSonic::ProcMsgDamageEvent(const std::shared_ptr<MsgDamageEvent> spMsg) const
+	{
+		auto msgDamage = xgame::MsgDamage{0, 8, 3, pTransform->GetLocalPosition(), pTransform->GetLocalPosition()};
+		
+		ObjUtil::SendMessageImmToSetObject(*this, spMsg->damagedObject, msgDamage, true);
 		return true;
 	}
 

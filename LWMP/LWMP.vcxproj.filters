@@ -117,6 +117,7 @@
     <ClInclude Include="PlayerData.h">
       <Filter>Mod\Multiplayer</Filter>
     </ClInclude>
+    <ClInclude Include="EventHooks.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
@@ -205,6 +206,7 @@
     <ClCompile Include="MultiplayerSonicInfo.cpp">
       <Filter>Mod\Multiplayer</Filter>
     </ClCompile>
+    <ClCompile Include="EventHooks.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Network">

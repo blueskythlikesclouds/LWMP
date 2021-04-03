@@ -59,14 +59,6 @@ void Session::preUpdate()
         lastUpdate = std::chrono::system_clock::now();
         for (MessageRequest request : getReceivedRequests())
         {
-            //if (request.isOfType<MsgHandleConnectRequest>())
-            //{
-            //    auto connectRequest = pool->allocate<MsgHandleConnectRequest>();
-            //    connectRequest->reply = MsgHandleConnectRequest::Reply::ACCEPTED;
-            //    setRemoteAddress(request.getAddress());
-            //    sendMessage(connectRequest);
-            //}
-
             for (size_t i = 0; i < listeners.size(); i++)
             {
 	            auto listener = listeners[i];
@@ -95,6 +87,11 @@ void Session::postUpdate()
         timedOut = true;
     }
 
+	// Attach metadata
+    const auto spMeta = pool->allocate<MsgMetadata>();
+    spMeta->playerNum = getPlayerNum();
+
+    sendMessage(spMeta);
     messageSender->update();
     isConnected = socket->isConnected();
     timedOut = !isConnected;
@@ -113,6 +110,12 @@ Address Session::getRemoteAddress() const
 void Session::setRemoteAddress(const Address& address)
 {
     remoteAddress = address;
+    addRemoteAddress(address);
+}
+
+void Session::addRemoteAddress(const Address& address)
+{
+    remotes.insert(address);
 }
 
 const std::shared_ptr<MemoryPool>& Session::getPool() const
@@ -130,14 +133,23 @@ const std::vector<MessageData>& Session::getReceivedMessages() const
     return messageReceiver->getMessages();
 }
 
-void Session::requestMessage(const MessageInfo* info) const
+void Session::requestMessage(const MessageInfo* info, const Address& address) const
 {
-    messageSender->request(info, remoteAddress);
+    messageSender->request(info, address);
 }
 
-void Session::sendMessage(const MessageInfo* info, const std::shared_ptr<Message>& message) const
+void Session::sendMessage(const MessageInfo* info, const std::shared_ptr<Message>& message,
+	const Address& address) const
 {
-    messageSender->send(info, message, remoteAddress);
+    messageSender->send(info, message, address);
+}
+
+void Session::broadcastMessage(const MessageInfo* info, const std::shared_ptr<Message>& message) const
+{
+    for (auto& address : remotes)
+    {
+        messageSender->send(info, message, address);
+    }
 }
 
 void Session::addListener(app::mp::SessionListener& rListener)

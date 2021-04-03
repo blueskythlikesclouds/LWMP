@@ -1,6 +1,7 @@
 #pragma once
 #undef SendMessage
 #include "Session.h"
+#include "MemoryPool.h"
 #include "SessionListener.h"
 
 namespace app::mp
@@ -38,6 +39,9 @@ namespace app::mp
 			return m_spSession;
 		}
 
+		template<typename T>
+		std::shared_ptr<T> AllocateMessage();
+		
 		void PreUpdate()
 		{
 			m_spSession->preUpdate();
@@ -48,4 +52,10 @@ namespace app::mp
 			m_spSession->postUpdate();
 		}
 	};
+
+	template <typename T>
+	std::shared_ptr<T> MultiplayerManager::AllocateMessage()
+	{
+		return GetSession()->getPool()->allocate<T>();
+	}
 }

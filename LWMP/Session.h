@@ -25,10 +25,11 @@ class Session
     std::chrono::system_clock::time_point lastUpdate;
     std::shared_ptr<Socket> socket;
     Address remoteAddress;
-
+	
     double timeout{5};
     bool isConnected{};
     bool timedOut{};
+    size_t playerNum{};
 
     std::shared_ptr<MemoryPool> pool;
 
@@ -39,6 +40,7 @@ class Session
     std::unique_ptr<MessageSender> messageSender;
 
     std::vector<app::mp::SessionListener*> listeners;
+    std::set<Address> remotes{};
 	
     void createHandlers();
 
@@ -57,27 +59,57 @@ public:
 
     Address getRemoteAddress() const;
     void setRemoteAddress(const Address& address);
+    void addRemoteAddress(const Address& address);
 
     const std::shared_ptr<MemoryPool>& getPool() const;
 
     const std::vector<MessageRequest>& getReceivedRequests() const;
     const std::vector<MessageData>& getReceivedMessages() const;
 
-    void requestMessage(const MessageInfo* info) const;
-    void sendMessage(const MessageInfo* info, const std::shared_ptr<Message>& message) const;
+    void requestMessage(const MessageInfo* info, const Address& address) const;
+    void sendMessage(const MessageInfo* info, const std::shared_ptr<Message>& message, const Address& address) const;
+    void broadcastMessage(const MessageInfo* info, const std::shared_ptr<Message>& message) const;
+
+    template<typename T>
+    void requestMessage(const Address& address) const
+    {
+        requestMessage(&T::INFO, address);
+    }
 
     template<typename T>
     void requestMessage() const
     {
-        requestMessage(&T::INFO);
+        requestMessage<T>(remoteAddress);
+    }
+	
+    void sendMessage(const MessageInfo* info, const std::shared_ptr<Message>& message) const
+    {
+        sendMessage(info, message, remoteAddress);
+    }
+
+    void requestMessage(const MessageInfo* info) const
+    {
+        requestMessage(info, remoteAddress);
+    }
+	
+    template<typename T>
+    void sendMessage(const std::shared_ptr<T>& message, const Address& address) const
+    {
+        sendMessage(&T::INFO, std::reinterpret_pointer_cast<T>(message), address);
     }
 
     template<typename T>
     void sendMessage(const std::shared_ptr<T>& message) const
     {
-        sendMessage(&T::INFO, std::reinterpret_pointer_cast<T>(message));
+        sendMessage<T>(message, remoteAddress);
     }
-
+	
+    template<typename T>
+    void broadcastMessage(const std::shared_ptr<T>& message) const
+    {
+        broadcastMessage(&T::INFO, std::reinterpret_pointer_cast<T>(message));
+    }
+	
     void addListener(app::mp::SessionListener& rListener);
 
 	void removeListener(app::mp::SessionListener& pListener)
@@ -89,4 +121,14 @@ public:
     {
         return isConnected;
     }
+
+	size_t getPlayerNum() const
+	{
+        return playerNum;
+	}
+
+	void setPlayerNum(size_t num)
+	{
+        playerNum = num;
+	}
 };

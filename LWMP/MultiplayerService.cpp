@@ -35,13 +35,19 @@ namespace app::mp
 		if (!a1)
 			return;
 
+		PlayerData dummyData{};
 		m_Players.clear();
+		m_PlayersData.clear();
+		
 		m_pLevelInfo = document->GetService<CLevelInfo>();
+		m_PlayersData.resize(m_pMuliplayerManager->m_PlayerCount + 1);
+		
 		for (size_t i = 0; i < m_pMuliplayerManager->m_PlayerCount; i++)
 		{
 			auto* pSonic = new MultiplayerSonic(i + 1);
 			m_Players.push_back(pSonic);
 			document->AddGameObject(pSonic);
+			m_PlayersData[i + 1] = dummyData;
 		}
 	}
 
@@ -60,6 +66,7 @@ namespace app::mp
 		auto* pSonic = new MultiplayerSonic(playerNum);
 		m_Players.push_back(pSonic);
 		document->AddGameObject(pSonic);
+		m_PlayersData.resize(playerNum);
 	}
 
 	void MultiplayerService::DisconnectedCallback(size_t playerNum)
@@ -70,8 +77,17 @@ namespace app::mp
 
 	bool MultiplayerService::OnMessageReceived(const MessageData& message)
 	{
-		// Somehow figure out who sent the message
-		auto& playerData = m_PlayersData[1];
+		auto playerNum = 1;
+
+		const auto spMeta = message.getMetadata();
+		if (!spMeta)
+			return false;
+
+		playerNum = spMeta->playerNum;
+		if (playerNum == 0)
+			playerNum = 1;
+		
+		auto& playerData = m_PlayersData[playerNum];
 
 		if (message.isOfType<MsgSetPosition>())
 		{

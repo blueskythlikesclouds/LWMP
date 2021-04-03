@@ -1,6 +1,7 @@
 ﻿#include "MessageInfoRegistry.h"
 #include "MessageReceiver.h"
 #include "MessageStream.h"
+#include "Messages.h"
 #include "Packet.h"
 #include "PacketReceiver.h"
 
@@ -30,6 +31,19 @@ void MessageReceiver::update()
             DEBUG_PRINT("%s\n", exception.what());
         }
     }
+
+    std::shared_ptr<MsgMetadata> metadata;
+    for (auto& message : messages)
+    {
+        if (!message.isOfType<MsgMetadata>())
+            continue;
+
+        metadata = message.get<MsgMetadata>();
+        break;
+    }
+
+    for (auto& message : messages)
+        message.setMetadata(metadata);
 
     receiver->clear();
 }
