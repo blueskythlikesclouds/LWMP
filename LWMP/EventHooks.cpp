@@ -38,18 +38,25 @@ namespace app::mp
 
 	bool HookedObject::ProcessMessage(fnd::Message& msg)
 	{
+		auto* mpMan = csl::fnd::Singleton<MultiplayerManager>::GetInstance();
 		if (msg.IsOfType<xgame::MsgDamage>())
 		{
 			auto& rDmg = reinterpret_cast<xgame::MsgDamage&>(msg);
 			if (rDmg.m_SenderType == 1)
 			{
-				auto* mpMan = csl::fnd::Singleton<MultiplayerManager>::GetInstance();
-
-				auto spMsg = mpMan->AllocateMessage<MsgDamageEvent>();
+				const auto spMsg = mpMan->AllocateMessage<MsgDamageEvent>();
 				spMsg->damagedObject = GetAdapter()->GetObjectResource()->GetID();
 				spMsg->damage = rDmg.m_Damage;
 				mpMan->GetSession()->sendMessage(spMsg);
 			}
+		}
+		else if (msg.IsOfType<xgame::MsgKick>())
+		{
+			auto& rKick = reinterpret_cast<xgame::MsgKick&>(msg);
+			const auto spMsg = mpMan->AllocateMessage<MsgKickEvent>();
+			spMsg->kickedObject = GetAdapter()->GetObjectResource()->GetID();
+			
+			mpMan->GetSession()->sendMessage(spMsg);
 		}
 		
 		return false;
