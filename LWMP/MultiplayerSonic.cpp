@@ -7,6 +7,7 @@
 #include "Animations.h"
 #include "MultiplayerService.h"
 #include "PlayerData.h"
+#include "MPMessages.h"
 
 namespace app::mp
 {
@@ -72,6 +73,8 @@ namespace app::mp
 		
 		if (message.isOfType<MsgSetAnimation>())
 			return ProcMsgSetAnimation(message.get<MsgSetAnimation>());
+		if (message.isOfType<MsgHitEvent>())
+			return ProcMsgHitEvent(message.get<MsgHitEvent>());
 		if (message.isOfType<MsgDamageEvent>())
 			return ProcMsgDamageEvent(message.get<MsgDamageEvent>());
 		if (message.isOfType<MsgKickEvent>())
@@ -85,6 +88,22 @@ namespace app::mp
 			return true;
 		}
 
+		return false;
+	}
+
+	bool MultiplayerSonic::ProcessMessage(fnd::Message& msg)
+	{
+		if (msg.IsOfType<xgame::MsgTakeObject>())
+		{
+			auto& rTakeObj = reinterpret_cast<xgame::MsgTakeObject&>(msg);
+			if (rTakeObj.IsValidUserID())
+			{
+				rTakeObj.m_Taken = true;
+			}
+			
+			return true;
+		}
+		
 		return false;
 	}
 
@@ -135,9 +154,40 @@ namespace app::mp
 		return true;
 	}
 
+	bool MultiplayerSonic::ProcMsgHitEvent(const std::shared_ptr<MsgHitEvent> spMsg) const
+	{
+		auto* pSetMan = m_pOwnerDocument->GetService<CSetObjectManager>();
+		if (!pSetMan)
+			return false;
+
+		const auto objHandle = ObjUtil::GetGameObjectHandle(pSetMan, spMsg->hitObject);
+		
+		if (!objHandle)
+			return false;
+
+		auto* pCollider = objHandle->GetComponent<game::GOCCollider>();
+		if (!pCollider)
+		{
+			DEBUG_PRINT("What did you hit??\n");
+			return false;
+		}
+		
+		auto* pShape = pCollider->FindColliShape(spMsg->hitShape);
+		if (pShape)
+		{
+			MsgHitEventCollisionMP hitMsg{ pShape, pShape };
+
+			hitMsg.m_Sender = GetID();
+
+			ObjUtil::SendMessageImmToSetObject(*this, spMsg->hitObject, hitMsg, true);
+		}
+		
+		return true;
+	}
+
 	bool MultiplayerSonic::ProcMsgDamageEvent(const std::shared_ptr<MsgDamageEvent> spMsg) const
 	{
-		auto msgDamage = xgame::MsgDamage{0, 8, 3, pTransform->GetLocalPosition(), pTransform->GetLocalPosition()};
+		auto msgDamage = MsgDamageMP{0, 8, 3, pTransform->GetLocalPosition(), pTransform->GetLocalPosition()};
 		
 		ObjUtil::SendMessageImmToSetObject(*this, spMsg->damagedObject, msgDamage, true);
 		return true;
@@ -146,10 +196,26 @@ namespace app::mp
 	bool MultiplayerSonic::ProcMsgKickEvent(const std::shared_ptr<MsgKickEvent> spMsg) const
 	{
 		// Fill the description properly and send message
-		const xgame::MsgKick::Description kickDesc{};
-		auto msgKick = xgame::MsgKick{ 0, kickDesc, pTransform->GetLocalPosition() };
+		auto* pSetMan = m_pOwnerDocument->GetService<CSetObjectManager>();
+		if (!pSetMan)
+			return false;
 
-		// ObjUtil::SendMessageImmToSetObject(*this, spMsg->kickedObject, msgKick, true);
+		const auto objHandle = ObjUtil::GetGameObjectHandle(pSetMan, spMsg->kickedObject);
+
+		if (!objHandle)
+			return false;
+
+		auto* pCollider = objHandle->GetComponent<game::GOCCollider>();
+		if (!pCollider)
+		{
+			DEBUG_PRINT("What did you hit??\n");
+			return false;
+		}
+		auto* pShape = pCollider->GetShape();
+
+		const xgame::MsgKick::Description kickDesc{ pShape, pShape };
+		auto msgKick = MsgKickMP{ 0, kickDesc, pTransform->GetLocalPosition() };
+		ObjUtil::SendMessageImmToSetObject(*this, spMsg->kickedObject, msgKick, true);
 		return true;
 	}
 

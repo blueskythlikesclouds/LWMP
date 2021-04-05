@@ -8,6 +8,7 @@ struct MsgSetAnimation;
 struct MsgSetAnimationFrame;
 struct MsgDamageEvent;
 struct MsgKickEvent;
+struct MsgHitEvent;
 
 namespace app::mp
 {
@@ -68,11 +69,13 @@ namespace app::mp
 		void RegisterResources(GameDocument& document);
 		void AddCallback(GameDocument& document) override;
 		bool OnMessageReceived(const MessageData& message) override;
+		bool ProcessMessage(fnd::Message& msg) override;
 		void Update(const fnd::SUpdateInfo& info) override;
 		void UpdatePhase(const fnd::SUpdateInfo& update_info, fnd::UpdatingPhase phase) override;
 
 	protected:
 		bool ProcMsgSetAnimation(const std::shared_ptr<MsgSetAnimation> spMsg) const;
+		bool ProcMsgHitEvent(const std::shared_ptr<MsgHitEvent> spMsg) const;
 		bool ProcMsgDamageEvent(const std::shared_ptr<MsgDamageEvent> spMsg) const;
 		bool ProcMsgKickEvent(const std::shared_ptr<MsgKickEvent> spMsg) const;
 	};

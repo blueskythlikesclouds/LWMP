@@ -1,8 +1,7 @@
 #include "Pch.h"
 #include "EventHooks.h"
-
-
 #include "Messages.h"
+#include "MPMessages.h"
 #include "MultiplayerManager.h"
 
 namespace app::mp
@@ -42,23 +41,42 @@ namespace app::mp
 		if (msg.IsOfType<xgame::MsgDamage>())
 		{
 			auto& rDmg = reinterpret_cast<xgame::MsgDamage&>(msg);
-			if (rDmg.m_SenderType == 1)
+			if (!MPUtil::IsMpVariant(rDmg))
 			{
-				const auto spMsg = mpMan->AllocateMessage<MsgDamageEvent>();
-				spMsg->damagedObject = GetAdapter()->GetObjectResource()->GetID();
-				spMsg->damage = rDmg.m_Damage;
-				mpMan->GetSession()->sendMessage(spMsg);
+				if (rDmg.m_SenderType == 1)
+				{
+					const auto spMsg = mpMan->AllocateMessage<MsgDamageEvent>();
+					spMsg->damagedObject = GetAdapter()->GetObjectResource()->GetID();
+					spMsg->damage = rDmg.m_Damage;
+					mpMan->GetSession()->sendMessage(spMsg);
+				}
 			}
 		}
 		else if (msg.IsOfType<xgame::MsgKick>())
 		{
-			auto& rKick = reinterpret_cast<xgame::MsgKick&>(msg);
-			const auto spMsg = mpMan->AllocateMessage<MsgKickEvent>();
-			spMsg->kickedObject = GetAdapter()->GetObjectResource()->GetID();
-			
-			mpMan->GetSession()->sendMessage(spMsg);
+			auto& rKickMsg = reinterpret_cast<xgame::MsgKick&>(msg);
+			if (!MPUtil::IsMpVariant(rKickMsg))
+			{
+				const auto spMsg = mpMan->AllocateMessage<MsgKickEvent>();
+				spMsg->kickedObject = GetAdapter()->GetObjectResource()->GetID();
+
+				mpMan->GetSession()->sendMessage(spMsg);
+			}
 		}
-		
+		else if (msg.IsOfType<xgame::MsgHitEventCollision>())
+		{
+			auto& rHitEvent = reinterpret_cast<xgame::MsgHitEventCollision&>(msg);
+			if (!MPUtil::IsMpVariant(rHitEvent))
+			{
+				const auto spMsg = mpMan->AllocateMessage<MsgHitEvent>();
+				spMsg->hitObject = GetAdapter()->GetObjectResource()->GetID();
+				spMsg->hitShape = rHitEvent.m_pShape1->GetID();
+
+				mpMan->GetSession()->sendMessage(spMsg);
+			}
+			return true;
+		}
+
 		return false;
 	}
 

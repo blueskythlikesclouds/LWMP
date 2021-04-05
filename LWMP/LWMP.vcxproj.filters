@@ -118,6 +118,10 @@
       <Filter>Mod\Multiplayer</Filter>
     </ClInclude>
     <ClInclude Include="EventHooks.h" />
+    <ClInclude Include="MPUtil.h" />
+    <ClInclude Include="MPMessages.h">
+      <Filter>Mod\Multiplayer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
@@ -207,6 +211,7 @@
       <Filter>Mod\Multiplayer</Filter>
     </ClCompile>
     <ClCompile Include="EventHooks.cpp" />
+    <ClCompile Include="MPUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Network">

@@ -105,6 +105,14 @@ struct MsgKickEvent : MsgPlayerBase
     DEFINE_MESSAGE_INFO()
 };
 
+struct MsgHitEvent : MsgPlayerBase
+{
+    VarUInt hitObject;
+    VarUInt hitShape;
+
+    DEFINE_MESSAGE_INFO()
+};
+
 struct MsgStartStage : Message
 {
     csl::ut::FixedString<16> stageID;
