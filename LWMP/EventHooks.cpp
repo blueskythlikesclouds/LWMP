@@ -41,7 +41,7 @@ namespace app::mp
 		if (msg.IsOfType<xgame::MsgDamage>())
 		{
 			auto& rDmg = reinterpret_cast<xgame::MsgDamage&>(msg);
-			if (!MPUtil::IsMpVariant(rDmg))
+			if (!MPUtil::IsMpVariant(rDmg) && GetAdapter()->GetObjectResource().IsValid())
 			{
 				if (rDmg.m_SenderType == 1)
 				{
@@ -55,7 +55,7 @@ namespace app::mp
 		else if (msg.IsOfType<xgame::MsgKick>())
 		{
 			auto& rKickMsg = reinterpret_cast<xgame::MsgKick&>(msg);
-			if (!MPUtil::IsMpVariant(rKickMsg))
+			if (!MPUtil::IsMpVariant(rKickMsg) && GetAdapter()->GetObjectResource().IsValid())
 			{
 				const auto spMsg = mpMan->AllocateMessage<MsgKickEvent>();
 				spMsg->kickedObject = GetAdapter()->GetObjectResource()->GetID();
@@ -66,7 +66,7 @@ namespace app::mp
 		else if (msg.IsOfType<xgame::MsgHitEventCollision>())
 		{
 			auto& rHitEvent = reinterpret_cast<xgame::MsgHitEventCollision&>(msg);
-			if (!MPUtil::IsMpVariant(rHitEvent))
+			if (!MPUtil::IsMpVariant(rHitEvent) && GetAdapter()->GetObjectResource().IsValid())
 			{
 				const auto spMsg = mpMan->AllocateMessage<MsgHitEvent>();
 				spMsg->hitObject = GetAdapter()->GetObjectResource()->GetID();
