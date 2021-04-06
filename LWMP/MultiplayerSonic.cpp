@@ -79,6 +79,8 @@ namespace app::mp
 			return ProcMsgDamageEvent(message.get<MsgDamageEvent>());
 		if (message.isOfType<MsgKickEvent>())
 			return ProcMsgKickEvent(message.get<MsgKickEvent>());
+		if (message.isOfType<MsgNotifyObjectEvent>())
+			return ProcMsgNotifyObjectEvent(message.get<MsgNotifyObjectEvent>());
 		if (message.isOfType<MsgSetBodyMode>())
 		{
 			const auto pMsg = message.get<MsgSetBodyMode>();
@@ -216,6 +218,13 @@ namespace app::mp
 		const xgame::MsgKick::Description kickDesc{ pShape, pShape };
 		auto msgKick = MsgKickMP{ 0, kickDesc, pTransform->GetLocalPosition() };
 		ObjUtil::SendMessageImmToSetObject(*this, spMsg->kickedObject, msgKick, true);
+		return true;
+	}
+
+	bool MultiplayerSonic::ProcMsgNotifyObjectEvent(const std::shared_ptr<MsgNotifyObjectEvent> spMsg) const
+	{
+		MsgNotifyObjectEventMP msgNotify{ spMsg->event };
+		ObjUtil::SendMessageImmToSetObject(*this, spMsg->notifiedObject, msgNotify, true);
 		return true;
 	}
 

@@ -9,6 +9,7 @@ struct MsgSetAnimationFrame;
 struct MsgDamageEvent;
 struct MsgKickEvent;
 struct MsgHitEvent;
+struct MsgNotifyObjectEvent;
 
 namespace app::mp
 {
@@ -78,5 +79,6 @@ namespace app::mp
 		bool ProcMsgHitEvent(const std::shared_ptr<MsgHitEvent> spMsg) const;
 		bool ProcMsgDamageEvent(const std::shared_ptr<MsgDamageEvent> spMsg) const;
 		bool ProcMsgKickEvent(const std::shared_ptr<MsgKickEvent> spMsg) const;
+		bool ProcMsgNotifyObjectEvent(const std::shared_ptr<MsgNotifyObjectEvent> spMsg) const;
 	};
 }

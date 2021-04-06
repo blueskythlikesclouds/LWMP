@@ -34,4 +34,15 @@ namespace app::mp
 			
 		}
 	};
+
+	class MsgNotifyObjectEventMP : public xgame::MsgNotifyObjectEvent, MPObjHeader
+	{
+	public:
+		inline static uint MessageID = 0x6013;
+		
+		MsgNotifyObjectEventMP(EEventType event) : MsgNotifyObjectEvent(event)
+		{
+			
+		}
+	};
 }

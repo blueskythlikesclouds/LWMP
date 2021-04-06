@@ -76,6 +76,17 @@ namespace app::mp
 			}
 			return true;
 		}
+		else if (msg.IsOfType<xgame::MsgNotifyObjectEvent>())
+		{
+			auto& rNotifyEvent = reinterpret_cast<xgame::MsgNotifyObjectEvent&>(msg);
+			if (!MPUtil::IsMpVariant(rNotifyEvent) && GetAdapter()->GetObjectResource().IsValid())
+			{
+				const auto spMsg = mpMan->AllocateMessage<MsgNotifyObjectEvent>();
+				spMsg->notifiedObject = GetAdapter()->GetObjectResource()->GetID();
+				spMsg->event = rNotifyEvent.GetEventType();
+				mpMan->GetSession()->sendMessage(spMsg);
+			}
+		}
 
 		return false;
 	}
