@@ -189,7 +189,7 @@ namespace app::mp
 
 	bool MultiplayerSonic::ProcMsgDamageEvent(const std::shared_ptr<MsgDamageEvent> spMsg) const
 	{
-		auto msgDamage = MsgDamageMP{0, 8, 3, pTransform->GetLocalPosition(), pTransform->GetLocalPosition()};
+		auto msgDamage = MsgDamageMP{0, 8, 3, m_pTransform->GetLocalPosition(), m_pTransform->GetLocalPosition()};
 		
 		ObjUtil::SendMessageImmToSetObject(*this, spMsg->damagedObject, msgDamage, true);
 		return true;
@@ -216,7 +216,7 @@ namespace app::mp
 		auto* pShape = pCollider->GetShape();
 
 		const xgame::MsgKick::Description kickDesc{ pShape, pShape };
-		auto msgKick = MsgKickMP{ 0, kickDesc, pTransform->GetLocalPosition() };
+		auto msgKick = MsgKickMP{ 0, kickDesc, m_pTransform->GetLocalPosition() };
 		ObjUtil::SendMessageImmToSetObject(*this, spMsg->kickedObject, msgKick, true);
 		return true;
 	}
