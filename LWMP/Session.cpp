@@ -18,7 +18,7 @@ void Session::createHandlers()
     messageSender = std::make_unique<MessageSender>(packetSender, pool);
 }
 
-Session::Session() : pool(std::make_shared<MemoryPool>(128))
+Session::Session() : pool(std::make_shared<MemoryPool>(8092))
 {
 
 }
