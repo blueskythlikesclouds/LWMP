@@ -12,28 +12,29 @@
 namespace app::mp
 {
 	using namespace fnd;
-	
+
 	void MultiplayerSonic::AddCallback(GameDocument& document)
 	{
 		m_pPhysics = new(GetAllocator()) CPhysicsStub();
 		m_pBlackboard = new(GetAllocator()) CBlackBoard();
 		m_pBlackboard->playerNo = 0;
 		m_pBlackboard->bodyMode = Player::BodyMode::Human;
-		
+
 		m_pLevelInfo = document.GetService<CLevelInfo>();
 		m_pMpService = document.GetService<MultiplayerService>();
 
 		auto* pContainer = document.GetService<CObjInfoContainer>();
 		if (!pContainer)
 			return;
-		
+
+		m_pCollider = GOComponent::Create<game::GOCCollider>(*this);
 		GOComponent::Create<GOCVisualContainer>(*this);
 		GOComponent::Create<game::GOCAnimationContainer>(*this);
 		GOComponent::Create<game::GOCIKConstraint>(*this);
-		
+
 		auto* pCollector = GOComponent::Create<Player::GOCCollector>(*this);
 		auto* pShadow = GOComponent::Create<Player::GOCPlayerShadow>(*this);
-		
+
 		GOComponent::BeginSetup(*this);
 
 		m_pVisual = new(GetAllocator()) Player::CVisualGOC(this);
@@ -44,13 +45,27 @@ namespace app::mp
 
 		pCollector->Setup(this);
 		RegisterResources(document);
-		
+
 		const Player::GOCPlayerShadow::Description shadowDesc{ 2, &m_GravityController };
 		pShadow->Setup(shadowDesc);
 
 		const Player::SVisualCinfo visInfo{};
 		m_pVisual->Initialize(visInfo);
 		pEffect->Initialize();
+
+		const game::GOCCollider::Description colDesc{ 1 };
+		m_pCollider->Setup(colDesc);
+
+		game::ColliCapsuleShapeCInfo shapeCapsule{};
+		shapeCapsule.m_Radius = 2;
+		shapeCapsule.m_Height = 20;
+		shapeCapsule.m_ShapeID = 6;
+
+		shapeCapsule.m_Flags = 4;
+		shapeCapsule.m_Unk2 |= 0x300u;
+		shapeCapsule.m_Unk3 = 0x6300;
+		shapeCapsule.m_MotionType = 1;
+		m_pCollider->CreateShape(shapeCapsule);
 		
 		csl::fnd::Singleton<MultiplayerManager>::GetInstance()->GetSession()->addListener(*this);
 		GOComponent::EndSetup(*this);
@@ -70,7 +85,7 @@ namespace app::mp
 
 		if (playerNum != m_PlayerNum)
 			return false;
-		
+
 		if (message.isOfType<MsgSetAnimation>())
 			return ProcMsgSetAnimation(message.get<MsgSetAnimation>());
 		if (message.isOfType<MsgHitEvent>())
@@ -98,14 +113,26 @@ namespace app::mp
 		if (msg.IsOfType<xgame::MsgTakeObject>())
 		{
 			auto& rTakeObj = reinterpret_cast<xgame::MsgTakeObject&>(msg);
-			if (rTakeObj.IsValidUserID())
+			switch (rTakeObj.m_Type)
 			{
-				rTakeObj.m_Taken = true;
+			case 0:
+			case 1:
+			{
+				if (rTakeObj.IsValidUserID() && rTakeObj.m_UserID == 6)
+				{
+					rTakeObj.m_Taken = true;
+				}
+				break;
 			}
-			
+
+			default:
+				rTakeObj.m_Taken = true;
+				break;
+			}
+
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -128,7 +155,7 @@ namespace app::mp
 				rpAnimation->SetFrame(m_pMpService->GetPlayerData(m_PlayerNum)->animationFrame);
 			}
 		}
-		
+
 		if (phase == 1)
 		{
 			auto* playerData = m_pMpService->GetPlayerData(m_PlayerNum);
@@ -136,6 +163,9 @@ namespace app::mp
 			// Copy to stack because compiler refuses to align these
 			const auto pos = playerData->position;
 			const auto rot = playerData->rotation;
+
+			m_pTransform->SetLocalTranslation(pos);
+			m_pTransform->SetLocalRotation(rot);
 
 			m_pPhysics->m_Rotation = rot;
 			m_pPhysics->SetPosition(pos);
@@ -152,7 +182,7 @@ namespace app::mp
 				rpAnimation->ChangeAnimation(ANIMATIONS[spMsg->animationIndex]);
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -163,7 +193,7 @@ namespace app::mp
 			return false;
 
 		const auto objHandle = ObjUtil::GetGameObjectHandle(pSetMan, spMsg->hitObject);
-		
+
 		if (!objHandle)
 			return false;
 
@@ -173,24 +203,24 @@ namespace app::mp
 			DEBUG_PRINT("What did you hit??\n");
 			return false;
 		}
-		
+
 		auto* pShape = pCollider->FindColliShape(spMsg->hitShape);
 		if (pShape)
 		{
-			MsgHitEventCollisionMP hitMsg{ pShape, pShape };
+			MsgHitEventCollisionMP hitMsg{ m_pCollider->GetShape(), pShape };
 
 			hitMsg.m_Sender = GetID();
 
 			ObjUtil::SendMessageImmToSetObject(*this, spMsg->hitObject, hitMsg, true);
 		}
-		
+
 		return true;
 	}
 
 	bool MultiplayerSonic::ProcMsgDamageEvent(const std::shared_ptr<MsgDamageEvent> spMsg) const
 	{
-		auto msgDamage = MsgDamageMP{0, 8, 3, m_pTransform->GetLocalPosition(), m_pTransform->GetLocalPosition()};
-		
+		auto msgDamage = MsgDamageMP{ 0, 8, 3, m_pTransform->GetLocalPosition(), m_pTransform->GetLocalPosition() };
+
 		ObjUtil::SendMessageImmToSetObject(*this, spMsg->damagedObject, msgDamage, true);
 		return true;
 	}
@@ -215,7 +245,7 @@ namespace app::mp
 		}
 		auto* pShape = pCollider->GetShape();
 
-		const xgame::MsgKick::Description kickDesc{ pShape, pShape };
+		const xgame::MsgKick::Description kickDesc{ m_pCollider->GetShape(), pShape };
 		auto msgKick = MsgKickMP{ 0, kickDesc, m_pTransform->GetLocalPosition() };
 		ObjUtil::SendMessageImmToSetObject(*this, spMsg->kickedObject, msgKick, true);
 		return true;
@@ -247,7 +277,7 @@ namespace app::mp
 		struct VisualResourceInfo
 		{
 			typedef void __cdecl FuncType(MultiplayerSonic*, Player::GOCReferenceHolder&, uint);
-			
+
 			const char* m_pResName{};
 			size_t m_HolderNum{};
 			FuncType* m_pRegisterFunc{};
@@ -256,7 +286,7 @@ namespace app::mp
 		FUNCTION_PTR(void, __cdecl, fp_RegisterVisualSonicResource, ASLR(0x008FE300), MultiplayerSonic*, Player::GOCReferenceHolder&, uint, bool);
 		FUNCTION_PTR(void, __cdecl, fp_RegisterVisualSpinResource, ASLR(0x008FEA20), MultiplayerSonic*, Player::GOCReferenceHolder&, uint, uint, bool);
 		FUNCTION_PTR(void, __cdecl, fp_RegisterPhantomSpinResource, ASLR(0x008FD8F0), MultiplayerSonic*, Player::GOCReferenceHolder&, uint, bool);
-		
+
 		const VisualResourceInfo resInfos[] =
 		{
 			{"SuperSonicInfo"     , 2 , reinterpret_cast<VisualResourceInfo::FuncType*>(ASLR(0x008FED10))},
@@ -280,7 +310,7 @@ namespace app::mp
 
 		if (pContainer->IsRegister("PhantomSpinInfo"))
 			fp_RegisterPhantomSpinResource(this, pCollector->GetHolder(Player::BodyMode::PhantomSpin), 0, true);
-		
+
 		for (auto& info : resInfos)
 		{
 			if (pContainer->IsRegister(info.m_pResName))

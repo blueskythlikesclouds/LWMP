@@ -50,6 +50,7 @@ namespace app::mp
 		ut::RefPtr<CPhysicsStub> m_pPhysics{};
 		ut::RefPtr<CBlackBoard> m_pBlackboard{};
 		MultiplayerService* m_pMpService{};
+		game::GOCCollider* m_pCollider{};
 		Player::GravityController m_GravityController{};
 		
 	public:

@@ -75,7 +75,7 @@ namespace app::mp
 			{
 				const auto spMsg = mpMan->AllocateMessage<MsgHitEvent>();
 				spMsg->hitObject = GetAdapter()->GetObjectResource()->GetID();
-				spMsg->hitShape = rHitEvent.m_pShape1->GetID();
+				spMsg->hitShape = rHitEvent.m_pSelf->GetID();
 
 				mpMan->GetSession()->sendMessage(spMsg);
 			}

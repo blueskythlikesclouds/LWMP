@@ -8,7 +8,7 @@ namespace app::mp
 	public:
 		inline const static unsigned int MessageID = 0x9000;
 		
-		MsgHitEventCollisionMP(game::ColliShape* pShape1, game::ColliShape* pShape2) : MsgHitTriggerBase(MessageID, pShape1, pShape2)
+		MsgHitEventCollisionMP(game::ColliShape* pSelf, game::ColliShape* pOther) : MsgHitTriggerBase(MessageID, pSelf, pOther)
 		{
 			
 		}
