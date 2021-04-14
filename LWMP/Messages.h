@@ -108,6 +108,7 @@ struct MsgKickEvent : MsgPlayerBase
 struct MsgHitEvent : MsgPlayerBase
 {
     VarUInt hitObject;
+    VarUInt hitUnit;
     VarUInt hitShape;
 
     DEFINE_MESSAGE_INFO()

@@ -9,6 +9,8 @@
 #include "PlayerData.h"
 #include "MPMessages.h"
 
+#undef SendMessage
+
 namespace app::mp
 {
 	using namespace fnd;
@@ -113,22 +115,7 @@ namespace app::mp
 		if (msg.IsOfType<xgame::MsgTakeObject>())
 		{
 			auto& rTakeObj = reinterpret_cast<xgame::MsgTakeObject&>(msg);
-			switch (rTakeObj.m_Type)
-			{
-			case 0:
-			case 1:
-			{
-				if (rTakeObj.IsValidUserID() && rTakeObj.m_UserID == 6)
-				{
-					rTakeObj.m_Taken = true;
-				}
-				break;
-			}
-
-			default:
-				rTakeObj.m_Taken = true;
-				break;
-			}
+			rTakeObj.m_Taken = true;
 
 			return true;
 		}
@@ -192,7 +179,7 @@ namespace app::mp
 		if (!pSetMan)
 			return false;
 
-		const auto objHandle = ObjUtil::GetGameObjectHandle(pSetMan, spMsg->hitObject);
+		const auto objHandle = ObjUtil::GetGameObjectHandle(pSetMan, spMsg->hitObject, spMsg->hitUnit);
 
 		if (!objHandle)
 			return false;
@@ -211,7 +198,7 @@ namespace app::mp
 
 			hitMsg.m_Sender = GetID();
 
-			ObjUtil::SendMessageImmToSetObject(*this, spMsg->hitObject, hitMsg, true);
+			objHandle->SendMessage(hitMsg);
 		}
 
 		return true;

@@ -13,6 +13,6 @@ DECLARE_MESSAGE_INFO(MsgSetAnimationFrame, animationFrameIntegral, animationFram
 DECLARE_MESSAGE_INFO(MsgSetRingCount, ringCount)
 DECLARE_MESSAGE_INFO(MsgDamageEvent, damagedObject, damage)
 DECLARE_MESSAGE_INFO(MsgKickEvent, kickedObject)
-DECLARE_MESSAGE_INFO(MsgHitEvent, hitObject, hitShape)
+DECLARE_MESSAGE_INFO(MsgHitEvent, hitObject, hitUnit, hitShape)
 DECLARE_MESSAGE_INFO(MsgNotifyObjectEvent, notifiedObject, event)
 DECLARE_MESSAGE_INFO(MsgStartStage, stageID)
