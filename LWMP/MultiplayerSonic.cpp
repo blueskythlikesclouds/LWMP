@@ -65,8 +65,7 @@ namespace app::mp
 
 		shapeCapsule.m_Flags = 4;
 		shapeCapsule.m_Unk2 |= 0x300u;
-		shapeCapsule.m_Unk3 = 0x6300;
-		shapeCapsule.m_MotionType = 1;
+		shapeCapsule.m_Unk3 = 0x6301;
 		m_pCollider->CreateShape(shapeCapsule);
 		
 		csl::fnd::Singleton<MultiplayerManager>::GetInstance()->GetSession()->addListener(*this);
