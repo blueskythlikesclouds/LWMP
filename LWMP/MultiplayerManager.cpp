@@ -4,6 +4,7 @@
 #include "MemoryPool.h"
 #include "MessageData.h"
 #include "MessageRequest.h"
+#include "MPUtil.h"
 #include "MultiplayerService.h"
 #include "MultiplayerSonic.h"
 
@@ -26,8 +27,13 @@ HOOK(void, __cdecl, RegisterResourceInfosHook, ASLR(0x008F73F0), app::GameDocume
 
 	// Force the game to always load super
     static_cast<ResourceInfo*>(resInfo)->m_LoadFlags |= 8;
-    app::mp::MultiplayerSonic::SetupInfo(*pDocument, &alloc);
     originalRegisterResourceInfosHook(pDocument, resInfo, alloc);
+}
+
+HOOK(void, __fastcall, GameDocumentAddObject, app::GameDocument::ms_fpAddGameObject, app::GameDocument* pDoc, void* edx, app::GameObject* pObj)
+{
+    originalGameDocumentAddObject(pDoc, edx, pObj);
+    csl::fnd::Singleton<app::mp::MultiplayerManager>::GetInstance()->OnObjectAdded(pObj);
 }
 
 namespace app::mp
@@ -159,11 +165,35 @@ namespace app::mp
 		
         return false;
 	}
+
+    void MultiplayerManager::OnObjectAdded(GameObject* pObj)
+    {
+        if (!m_pOwner)
+            return;
+
+        auto* pSetListener = dynamic_cast<CSetObjectListener*>(pObj);
+        if (!pSetListener)
+            return;
+
+        if (!pSetListener->GetAdapter() || !pSetListener->GetAdapter()->GetObjectResource().IsValid())
+            return;
+
+        const size_t uid = pSetListener->GetAdapter()->GetObjectResource().GetUID();
+        if (MPUtil::IsObjTracked(uid))
+            return;
+
+        const auto createObjMsg = AllocateMessage<MsgCreateSetObject>();
+        createObjMsg->setID = uid;
+        m_pOwner->sendMessage(createObjMsg);
+        pObj->SetProperty(MPUtil::ms_MPObjLocalPropKey, fnd::PropertyValue(1));
+    }
 	
 	void* MultiplayerManager::MultiplayerManager_init()
     {
         INSTALL_HOOK(GameModeStageInitFirstHook);
         INSTALL_HOOK(RegisterResourceInfosHook);
+        INSTALL_HOOK(GameDocumentAddObject);
+		
         return new(game::GlobalAllocator::GetSingletonAllocator()) MultiplayerManager();
     }
 

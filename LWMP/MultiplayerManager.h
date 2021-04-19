@@ -33,6 +33,7 @@ namespace app::mp
 		bool ProcessMessage(fnd::Message& msg) override;
 		bool OnMessageRequested(const MessageRequest& request) override;
 		bool OnMessageReceived(const MessageData& message) override;
+		void OnObjectAdded(GameObject* pObj);
 		
 		const std::shared_ptr<Session>& GetSession() const
 		{

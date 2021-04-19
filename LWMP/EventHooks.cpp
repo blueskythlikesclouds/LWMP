@@ -51,7 +51,7 @@ namespace app::mp
 				if (rDmg.m_SenderType == 1)
 				{
 					const auto spMsg = mpMan->AllocateMessage<MsgDamageEvent>();
-					spMsg->damagedObject = GetAdapter()->GetObjectResource()->GetUID();
+					spMsg->damagedObject = GetAdapter()->GetObjectResource().GetUID();
 					spMsg->damage = rDmg.m_Damage;
 					mpMan->GetSession()->sendMessage(spMsg);
 				}
@@ -63,7 +63,7 @@ namespace app::mp
 			if (!MPUtil::IsMpVariant(rKickMsg))
 			{
 				const auto spMsg = mpMan->AllocateMessage<MsgKickEvent>();
-				spMsg->kickedObject = GetAdapter()->GetObjectResource()->GetUID();
+				spMsg->kickedObject = GetAdapter()->GetObjectResource().GetUID();
 
 				mpMan->GetSession()->sendMessage(spMsg);
 			}
@@ -73,9 +73,8 @@ namespace app::mp
 			auto& rHitEvent = reinterpret_cast<xgame::MsgHitEventCollision&>(msg);
 			if (!MPUtil::IsMpVariant(rHitEvent))
 			{
-				auto* pSetMan = m_pOwnerDocument->GetService<CSetObjectManager>();
 				const auto spMsg = mpMan->AllocateMessage<MsgHitEvent>();
-				spMsg->hitObject = GetAdapter()->GetObjectResource()->GetUID();
+				spMsg->hitObject = GetAdapter()->GetObjectResource().GetUID();
 				spMsg->hitUnit = GetAdapter()->GetActor()->GetUnitNum();
 				spMsg->hitShape = rHitEvent.m_pSelf->GetID();
 
@@ -89,9 +88,19 @@ namespace app::mp
 			if (!MPUtil::IsMpVariant(rNotifyEvent))
 			{
 				const auto spMsg = mpMan->AllocateMessage<MsgNotifyObjectEvent>();
-				spMsg->notifiedObject = GetAdapter()->GetObjectResource()->GetUID();
+				spMsg->notifiedObject = GetAdapter()->GetObjectResource().GetUID();
 				spMsg->event = rNotifyEvent.GetEventType();
 				mpMan->GetSession()->sendMessage(spMsg);
+			}
+		}
+		else if (msg.IsOfType<xgame::MsgKill>())
+		{
+			if (GetProperty(MPUtil::ms_MPObjLocalPropKey).getInt())
+			{
+				SetProperty(MPUtil::ms_MPObjLocalPropKey, fnd::PropertyValue(0));
+				const auto spMsgKill = mpMan->AllocateMessage<MsgKillSetObject>();
+				spMsgKill->setID = GetAdapter()->GetObjectResource().GetUID();
+				mpMan->GetSession()->sendMessage(spMsgKill);
 			}
 		}
 

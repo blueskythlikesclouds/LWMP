@@ -6,6 +6,7 @@
 #include "MultiplayerSonic.h"
 #include "MessageData.h"
 #include "Messages.h"
+#include "MPUtil.h"
 
 namespace app::mp
 {
@@ -35,24 +36,25 @@ namespace app::mp
 		if (!a1)
 			return;
 
-		PlayerData dummyData{};
+		const PlayerData dummyData{};
 		m_Players.clear();
 		m_PlayersData.clear();
 		
-		m_pLevelInfo = document->GetService<CLevelInfo>();
+		m_pLevelInfo = m_pOwnerDocument->GetService<CLevelInfo>();
 		m_PlayersData.resize(m_pMuliplayerManager->m_PlayerCount + 1);
 		
 		for (size_t i = 0; i < m_pMuliplayerManager->m_PlayerCount; i++)
 		{
 			auto* pSonic = new MultiplayerSonic(i + 1);
 			m_Players.push_back(pSonic);
-			document->AddGameObject(pSonic);
+			m_pOwnerDocument->AddGameObject(pSonic);
 			m_PlayersData[i + 1] = dummyData;
 		}
 	}
 
 	void MultiplayerService::Load()
 	{
+		MultiplayerSonic::SetupInfo(*m_pOwnerDocument, GetAllocator());
 		if (m_pOwner)
 		{
 			const auto msgStart = m_pOwner->getPool()->allocate<MsgStartStage>();
@@ -65,7 +67,7 @@ namespace app::mp
 	{
 		auto* pSonic = new MultiplayerSonic(playerNum);
 		m_Players.push_back(pSonic);
-		document->AddGameObject(pSonic);
+		m_pOwnerDocument->AddGameObject(pSonic);
 		m_PlayersData.resize(playerNum);
 	}
 
@@ -107,6 +109,19 @@ namespace app::mp
 			const auto spMsgSetFrame = message.get<MsgSetAnimationFrame>();
 			playerData.animationFrame = (float)spMsgSetFrame->animationFrameIntegral + (float)spMsgSetFrame->animationFrameFractional / 255.0f;
 			
+			return true;
+		}
+		if (message.isOfType<MsgCreateSetObject>() && m_pOwnerDocument)
+		{
+			const auto spMsgCreateObj = message.get<MsgCreateSetObject>();
+
+			MPUtil::CreateSetObject(*m_pOwnerDocument, spMsgCreateObj->setID);
+			return true;
+		}
+		if (message.isOfType<MsgKillSetObject>() && m_pOwnerDocument)
+		{
+			const auto spMsgKillObj = message.get<MsgKillSetObject>();
+			MPUtil::KillSetObject(*m_pOwnerDocument, spMsgKillObj->setID);
 			return true;
 		}
 		

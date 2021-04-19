@@ -174,11 +174,8 @@ namespace app::mp
 
 	bool MultiplayerSonic::ProcMsgHitEvent(const std::shared_ptr<MsgHitEvent> spMsg) const
 	{
-		auto* pSetMan = m_pOwnerDocument->GetService<CSetObjectManager>();
-		if (!pSetMan)
-			return false;
-
-		const auto objHandle = ObjUtil::GetGameObjectHandle(pSetMan, spMsg->hitObject, spMsg->hitUnit);
+		auto handle = ObjUtil::CreateSetObject(*m_pOwnerDocument, spMsg->hitObject);
+		const auto objHandle = ObjUtil::GetGameObjectHandle(*m_pOwnerDocument, spMsg->hitObject, spMsg->hitUnit);
 
 		if (!objHandle)
 			return false;
@@ -214,11 +211,7 @@ namespace app::mp
 	bool MultiplayerSonic::ProcMsgKickEvent(const std::shared_ptr<MsgKickEvent> spMsg) const
 	{
 		// Fill the description properly and send message
-		auto* pSetMan = m_pOwnerDocument->GetService<CSetObjectManager>();
-		if (!pSetMan)
-			return false;
-
-		const auto objHandle = ObjUtil::GetGameObjectHandle(pSetMan, spMsg->kickedObject);
+		const auto objHandle = ObjUtil::GetGameObjectHandle(*m_pOwnerDocument, spMsg->kickedObject);
 
 		if (!objHandle)
 			return false;

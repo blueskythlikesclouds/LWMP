@@ -126,5 +126,19 @@ struct MsgStartStage : Message
 {
     csl::ut::FixedString<16> stageID;
 
-	DEFINE_MESSAGE_INFO()
+    DEFINE_MESSAGE_INFO()
+};
+
+struct MsgCreateSetObject : Message
+{
+    VarUInt setID;
+
+    DEFINE_MESSAGE_INFO()
+};
+
+struct MsgKillSetObject : Message
+{
+    VarUInt setID;
+
+    DEFINE_MESSAGE_INFO()
 };
