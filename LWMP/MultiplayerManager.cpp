@@ -4,6 +4,7 @@
 #include "MemoryPool.h"
 #include "MessageData.h"
 #include "MessageRequest.h"
+#include "MPMessages.h"
 #include "MPUtil.h"
 #include "MultiplayerService.h"
 #include "MultiplayerSonic.h"
@@ -30,10 +31,18 @@ HOOK(void, __cdecl, RegisterResourceInfosHook, ASLR(0x008F73F0), app::GameDocume
     originalRegisterResourceInfosHook(pDocument, resInfo, alloc);
 }
 
-HOOK(void, __fastcall, GameDocumentAddObject, app::GameDocument::ms_fpAddGameObject, app::GameDocument* pDoc, void* edx, app::GameObject* pObj)
+HOOK(app::CSetObjectListener*, __fastcall, SetObjectCreateObjectImpl, app::CSetObjectManager::ms_fpCreateObjectImpl, 
+    app::CSetObjectManager* pMan, void* edx, 
+    app::CSetAdapter* pObj, app::CActivationManager* pActMan, uint flags)
 {
-    originalGameDocumentAddObject(pDoc, edx, pObj);
-    csl::fnd::Singleton<app::mp::MultiplayerManager>::GetInstance()->OnObjectAdded(pObj);
+    auto* pListener = originalSetObjectCreateObjectImpl(pMan, edx, pObj, pActMan, flags);
+
+	if (flags != -1 && pListener)
+	{
+        csl::fnd::Singleton<app::mp::MultiplayerManager>::GetInstance()->OnObjectAdded(pListener);
+	}
+
+    return pListener;
 }
 
 namespace app::mp
@@ -166,15 +175,11 @@ namespace app::mp
         return false;
 	}
 
-    void MultiplayerManager::OnObjectAdded(GameObject* pObj)
+    void MultiplayerManager::OnObjectAdded(CSetObjectListener* pSetListener)
     {
         if (!m_pOwner)
             return;
-
-        auto* pSetListener = dynamic_cast<CSetObjectListener*>(pObj);
-        if (!pSetListener)
-            return;
-
+		
         if (!pSetListener->GetAdapter() || !pSetListener->GetAdapter()->GetObjectResource().IsValid())
             return;
 
@@ -185,16 +190,16 @@ namespace app::mp
         const auto createObjMsg = AllocateMessage<MsgCreateSetObject>();
         createObjMsg->setID = uid;
         m_pOwner->sendMessage(createObjMsg);
-        pObj->SetProperty(MPUtil::ms_MPObjLocalPropKey, fnd::PropertyValue(1));
+        pSetListener->SetProperty(MPUtil::ms_MPObjLocalPropKey, 1);
     }
 	
 	void* MultiplayerManager::MultiplayerManager_init()
     {
         INSTALL_HOOK(GameModeStageInitFirstHook);
         INSTALL_HOOK(RegisterResourceInfosHook);
-        INSTALL_HOOK(GameDocumentAddObject);
+        INSTALL_HOOK(SetObjectCreateObjectImpl);
 		
-        return new(game::GlobalAllocator::GetSingletonAllocator()) MultiplayerManager();
+        return new(fnd::GetSingletonAllocator()) MultiplayerManager();
     }
 
     void MultiplayerManager::MultiplayerManager_destroy(void* instance)

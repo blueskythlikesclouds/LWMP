@@ -111,6 +111,11 @@ namespace app::mp
 
 	bool MultiplayerSonic::ProcessMessage(fnd::Message& msg)
 	{
+		if (msg.IsOfType<MsgIsLWMPObject>())
+		{
+			return true;
+		}
+		
 		if (msg.IsOfType<xgame::MsgTakeObject>())
 		{
 			auto& rTakeObj = reinterpret_cast<xgame::MsgTakeObject&>(msg);

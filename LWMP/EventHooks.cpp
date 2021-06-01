@@ -13,7 +13,7 @@ namespace app::mp
 		auto* pObj = dynamic_cast<CSetObjectListener*>(pThis);
 		if (pObj && handled)
 		{
-			reinterpret_cast<HookedObject*>(pObj)->ActorProcHooked(proc, pData);
+			static_cast<HookedObject*>(pObj)->ActorProcHooked(proc, pData);
 		}
 
 		return handled;

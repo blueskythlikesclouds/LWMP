@@ -45,4 +45,15 @@ namespace app::mp
 			
 		}
 	};
+
+	class MsgIsLWMPObject : public fnd::Message
+	{
+	public:
+		inline static uint MessageID = MPUtil::ms_MPSig;
+
+		MsgIsLWMPObject() : Message(MessageID)
+		{
+			
+		}
+	};
 }

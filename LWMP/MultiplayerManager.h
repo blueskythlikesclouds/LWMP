@@ -9,8 +9,8 @@ namespace app::mp
 	class MultiplayerService;
 
 	class MultiplayerManager : public fnd::ReferencedObject,
-		fnd::CLeafActor, SessionListener,
-		csl::fnd::Singleton<MultiplayerManager>
+		public fnd::CLeafActor, public SessionListener,
+		public csl::fnd::Singleton<MultiplayerManager>
 	{
 		friend MultiplayerService;
 		static void* MultiplayerManager_init();
@@ -33,7 +33,7 @@ namespace app::mp
 		bool ProcessMessage(fnd::Message& msg) override;
 		bool OnMessageRequested(const MessageRequest& request) override;
 		bool OnMessageReceived(const MessageData& message) override;
-		void OnObjectAdded(GameObject* pObj);
+		void OnObjectAdded(CSetObjectListener* pObj);
 		
 		const std::shared_ptr<Session>& GetSession() const
 		{
