@@ -52,6 +52,7 @@ namespace app::mp
 		MultiplayerService* m_pMpService{};
 		game::GOCCollider* m_pCollider{};
 		Player::GravityController m_GravityController{};
+		CSetObjectManager* m_pSetMan{};
 		
 	public:
 		MultiplayerSonic(size_t playerNum) : m_PlayerNum(playerNum)

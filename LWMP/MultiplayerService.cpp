@@ -30,6 +30,11 @@ namespace app::mp
 		m_pMuliplayerManager->m_ConnectedCallback -= MakePair(this, &MultiplayerService::ConnectedCallback);
 		m_pMuliplayerManager->m_DisconnectedCallback -= MakePair(this, &MultiplayerService::DisconnectedCallback);
 	}
+
+	void MultiplayerService::ResolveAccessibleService(GameDocument& document)
+	{
+		m_pLevelInfo = m_pOwnerDocument->GetService<CLevelInfo>();
+	}
 	
 	void MultiplayerService::StartGame(bool a1)
 	{
@@ -40,7 +45,6 @@ namespace app::mp
 		m_Players.clear();
 		m_PlayersData.clear();
 		
-		m_pLevelInfo = m_pOwnerDocument->GetService<CLevelInfo>();
 		m_PlayersData.resize(m_pMuliplayerManager->m_PlayerCount + 1);
 		
 		for (size_t i = 0; i < m_pMuliplayerManager->m_PlayerCount; i++)
@@ -109,19 +113,6 @@ namespace app::mp
 			const auto spMsgSetFrame = message.get<MsgSetAnimationFrame>();
 			playerData.animationFrame = (float)spMsgSetFrame->animationFrameIntegral + (float)spMsgSetFrame->animationFrameFractional / 255.0f;
 			
-			return true;
-		}
-		if (message.isOfType<MsgCreateSetObject>() && m_pOwnerDocument)
-		{
-			const auto spMsgCreateObj = message.get<MsgCreateSetObject>();
-
-			MPUtil::CreateSetObject(*m_pOwnerDocument, spMsgCreateObj->setID);
-			return true;
-		}
-		if (message.isOfType<MsgKillSetObject>() && m_pOwnerDocument)
-		{
-			const auto spMsgKillObj = message.get<MsgKillSetObject>();
-			MPUtil::KillSetObject(*m_pOwnerDocument, spMsgKillObj->setID);
 			return true;
 		}
 		

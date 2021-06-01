@@ -31,20 +31,6 @@ HOOK(void, __cdecl, RegisterResourceInfosHook, ASLR(0x008F73F0), app::GameDocume
     originalRegisterResourceInfosHook(pDocument, resInfo, alloc);
 }
 
-HOOK(app::CSetObjectListener*, __fastcall, SetObjectCreateObjectImpl, app::CSetObjectManager::ms_fpCreateObjectImpl, 
-    app::CSetObjectManager* pMan, void* edx, 
-    app::CSetAdapter* pObj, app::CActivationManager* pActMan, uint flags)
-{
-    auto* pListener = originalSetObjectCreateObjectImpl(pMan, edx, pObj, pActMan, flags);
-
-	if (flags != -1 && pListener)
-	{
-        csl::fnd::Singleton<app::mp::MultiplayerManager>::GetInstance()->OnObjectAdded(pListener);
-	}
-
-    return pListener;
-}
-
 namespace app::mp
 {
 	MultiplayerManager::MultiplayerManager()
@@ -174,30 +160,11 @@ namespace app::mp
 		
         return false;
 	}
-
-    void MultiplayerManager::OnObjectAdded(CSetObjectListener* pSetListener)
-    {
-        if (!m_pOwner)
-            return;
-		
-        if (!pSetListener->GetAdapter() || !pSetListener->GetAdapter()->GetObjectResource().IsValid())
-            return;
-
-        const size_t uid = pSetListener->GetAdapter()->GetObjectResource().GetUID();
-        if (MPUtil::IsObjTracked(uid))
-            return;
-
-        const auto createObjMsg = AllocateMessage<MsgCreateSetObject>();
-        createObjMsg->setID = uid;
-        m_pOwner->sendMessage(createObjMsg);
-        pSetListener->SetProperty(MPUtil::ms_MPObjLocalPropKey, 1);
-    }
 	
 	void* MultiplayerManager::MultiplayerManager_init()
     {
         INSTALL_HOOK(GameModeStageInitFirstHook);
         INSTALL_HOOK(RegisterResourceInfosHook);
-        INSTALL_HOOK(SetObjectCreateObjectImpl);
 		
         return new(fnd::GetSingletonAllocator()) MultiplayerManager();
     }

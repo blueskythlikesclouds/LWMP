@@ -128,17 +128,3 @@ struct MsgStartStage : Message
 
     DEFINE_MESSAGE_INFO()
 };
-
-struct MsgCreateSetObject : Message
-{
-    VarUInt setID;
-
-    DEFINE_MESSAGE_INFO()
-};
-
-struct MsgKillSetObject : Message
-{
-    VarUInt setID;
-
-    DEFINE_MESSAGE_INFO()
-};

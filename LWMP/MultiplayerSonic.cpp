@@ -17,6 +17,7 @@ namespace app::mp
 
 	void MultiplayerSonic::AddCallback(GameDocument& document)
 	{
+		m_pSetMan = document.GetService<CSetObjectManager>();
 		m_pPhysics = new(GetAllocator()) CPhysicsStub();
 		m_pBlackboard = new(GetAllocator()) CBlackBoard();
 		m_pBlackboard->playerNo = 0;
@@ -128,7 +129,10 @@ namespace app::mp
 	}
 
 	void MultiplayerSonic::Update(const fnd::SUpdateInfo& info)
-	{
+	{	
+		if (m_pSetMan)
+			m_pSetMan->SetBasePos(m_PlayerNum, m_pTransform->GetLocalPosition());
+
 		auto* pCollector = GetComponent<Player::GOCCollector>();
 		if (pCollector)
 			pCollector->UpdateChangeRequest();
@@ -195,7 +199,7 @@ namespace app::mp
 		auto* pShape = pCollider->FindColliShape(spMsg->hitShape);
 		if (pShape)
 		{
-			MsgHitEventCollisionMP hitMsg{ m_pCollider->GetShape(), pShape };
+			MsgHitEventCollisionMP hitMsg{ pShape, m_pCollider->GetShape() };
 
 			hitMsg.m_Sender = GetID();
 

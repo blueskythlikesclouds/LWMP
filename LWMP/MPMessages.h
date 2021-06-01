@@ -45,7 +45,7 @@ namespace app::mp
 			
 		}
 	};
-
+	
 	class MsgIsLWMPObject : public fnd::Message
 	{
 	public:

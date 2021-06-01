@@ -36,6 +36,7 @@ namespace app::mp
 		void DisconnectedCallback(size_t playerNum);
 		bool OnMessageReceived(const MessageData& message) override;
 		void Update(const fnd::SUpdateInfo& info) override;
+		void ResolveAccessibleService(GameDocument& document) override;
 		void StartGame(bool a1) override;
 		void OnRemovedFromGame() override
 		{

@@ -71,7 +71,8 @@ namespace app::mp
 		else if (msg.IsOfType<xgame::MsgHitEventCollision>())
 		{
 			auto& rHitEvent = reinterpret_cast<xgame::MsgHitEventCollision&>(msg);
-			if (!MPUtil::IsMpVariant(rHitEvent))
+			
+			if (!MPUtil::IsMpVariant(rHitEvent) && m_pOwnerDocument->GetService<CLevelInfo>()->GetPlayerID(0) == rHitEvent.m_Sender)
 			{
 				const auto spMsg = mpMan->AllocateMessage<MsgHitEvent>();
 				spMsg->hitObject = GetAdapter()->GetObjectResource().GetUID();
@@ -91,16 +92,6 @@ namespace app::mp
 				spMsg->notifiedObject = GetAdapter()->GetObjectResource().GetUID();
 				spMsg->event = rNotifyEvent.GetEventType();
 				mpMan->GetSession()->sendMessage(spMsg);
-			}
-		}
-		else if (msg.IsOfType<xgame::MsgKill>())
-		{
-			if (GetProperty(MPUtil::ms_MPObjLocalPropKey).getInt())
-			{
-				SetProperty(MPUtil::ms_MPObjLocalPropKey, fnd::PropertyValue(0));
-				const auto spMsgKill = mpMan->AllocateMessage<MsgKillSetObject>();
-				spMsgKill->setID = GetAdapter()->GetObjectResource().GetUID();
-				mpMan->GetSession()->sendMessage(spMsgKill);
 			}
 		}
 
