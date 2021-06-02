@@ -98,6 +98,12 @@ struct MsgDamageEvent : MsgPlayerBase
     DEFINE_MESSAGE_INFO()
 };
 
+struct MsgDamagePlayerEvent : MsgPlayerBase
+{
+    uint8_t dummy;
+    DEFINE_MESSAGE_INFO()
+};
+
 struct MsgKickEvent : MsgPlayerBase
 {
     VarUInt kickedObject;

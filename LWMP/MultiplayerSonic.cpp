@@ -64,9 +64,9 @@ namespace app::mp
 		shapeCapsule.m_Height = 20;
 		shapeCapsule.m_ShapeID = 6;
 
-		shapeCapsule.m_Flags = 4;
-		shapeCapsule.m_Unk2 |= 0x300u;
-		shapeCapsule.m_Unk3 = 0x6301;
+		shapeCapsule.m_Flags = 2;
+		shapeCapsule.m_Unk3 = 0x00020000;
+		shapeCapsule.m_Unk7 = 0x12;
 		m_pCollider->CreateShape(shapeCapsule);
 		
 		csl::fnd::Singleton<MultiplayerManager>::GetInstance()->GetSession()->addListener(*this);
@@ -122,6 +122,23 @@ namespace app::mp
 			auto& rTakeObj = reinterpret_cast<xgame::MsgTakeObject&>(msg);
 			rTakeObj.m_Taken = true;
 
+			return true;
+		}
+		else if (msg.IsOfType<xgame::MsgPLGetHomingTargetInfo>())
+		{
+			auto& rInfoMsg = reinterpret_cast<xgame::MsgPLGetHomingTargetInfo&>(msg);
+
+			rInfoMsg.m_CursorPosition = m_pTransform->GetLocalPosition();
+			rInfoMsg.SetHandledFlag();
+			return true;
+		}
+		else if (msg.IsOfType<xgame::MsgDamage>())
+		{
+			const auto pMsg = m_pOwner->getPool()->allocate<MsgDamagePlayerEvent>();
+			m_pOwner->sendMessage(pMsg);
+			
+			auto& rDamage = reinterpret_cast<xgame::MsgDamage&>(msg);
+			rDamage.SetReplyStatus({0, 0, 0}, true);
 			return true;
 		}
 

@@ -60,6 +60,8 @@ namespace app::mp
 			ASSERT_OFFSETOF(MultiplayerSonic, m_Components, 0x32C);
 			ASSERT_OFFSETOF(MultiplayerSonic, m_pPhysics, 0x344);
 			ASSERT_OFFSETOF(MultiplayerSonic, m_pBlackboard, 0x348);
+
+			SetProperty(0x4002, 9);
 			
 			SetUpdateFlag(0, true);
 			SetUpdateFlag(1, true);

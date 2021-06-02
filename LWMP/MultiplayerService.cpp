@@ -102,18 +102,23 @@ namespace app::mp
 
 			return true;
 		}
-		if (message.isOfType<MsgSetRotation>())
+		else if (message.isOfType<MsgSetRotation>())
 		{
 			const auto spMsgSetRot = message.get<MsgSetRotation>();
 			playerData.rotation = spMsgSetRot->rotation;
 			return true;
 		}
-		if (message.isOfType<MsgSetAnimationFrame>())
+		else if (message.isOfType<MsgSetAnimationFrame>())
 		{
 			const auto spMsgSetFrame = message.get<MsgSetAnimationFrame>();
 			playerData.animationFrame = (float)spMsgSetFrame->animationFrameIntegral + (float)spMsgSetFrame->animationFrameFractional / 255.0f;
 			
 			return true;
+		}
+		else if (message.isOfType<MsgDamagePlayerEvent>() && m_SonicHandle)
+		{
+			xgame::MsgDamage msgDamage{ 3, 8, 1, m_SonicHandle->GetComponent<fnd::GOCTransform>()->GetLocalPosition(), {0, 0, 0} };
+			m_SonicHandle->SendMessage(msgDamage);
 		}
 		
 		return false;
