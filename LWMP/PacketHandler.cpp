@@ -15,9 +15,9 @@ PacketHandler::PacketHandler(const std::shared_ptr<Socket>& socket) : socket(soc
 PacketHandler::~PacketHandler()
 {
     stop = true;
-	// Keeping this causes the game to not exit for some reason?
-    // TODO: Check why
-    //thread.join();
+
+	// This object is dying, please go live by yourself and likely stop
+    thread.detach();
 }
 
 std::unique_lock<std::mutex> PacketHandler::lock()

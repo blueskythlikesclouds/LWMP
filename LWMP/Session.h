@@ -111,11 +111,7 @@ public:
     }
 	
     void addListener(app::mp::SessionListener& rListener);
-
-	void removeListener(app::mp::SessionListener& pListener)
-    {
-        listeners.erase(std::remove(listeners.begin(), listeners.end(), &pListener));
-    }
+    void removeListener(app::mp::SessionListener& pListener);
 
 	bool isConnect() const
     {

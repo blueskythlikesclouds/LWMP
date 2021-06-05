@@ -23,7 +23,16 @@ Session::Session() : pool(std::make_shared<MemoryPool>(8092))
 
 }
 
-Session::~Session() = default;
+Session::~Session()
+{
+	// Detach our listener's because we're dying.
+	for (auto& pListener : listeners)
+	{
+        pListener->m_pOwner = nullptr;
+	}
+
+    listeners.clear();
+}
 
 void Session::openClient(const Address& address)
 {
@@ -156,4 +165,13 @@ void Session::addListener(app::mp::SessionListener& rListener)
 {
     rListener.m_pOwner = this;
     listeners.push_back(&rListener);
+}
+
+void Session::removeListener(app::mp::SessionListener& rListener)
+{
+	if (listeners.size() && rListener.m_pOwner == this)
+	{
+        rListener.m_pOwner = nullptr;
+        listeners.erase(std::remove(listeners.begin(), listeners.end(), &rListener));
+	}
 }

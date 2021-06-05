@@ -26,8 +26,8 @@ HOOK(void, __cdecl, RegisterResourceInfosHook, ASLR(0x008F73F0), app::GameDocume
         size_t m_LoadFlags;
 	};
 
-	// Force the game to always load super
-    static_cast<ResourceInfo*>(resInfo)->m_LoadFlags |= 8;
+	// Force the game to always load super and virtual sonic
+    static_cast<ResourceInfo*>(resInfo)->m_LoadFlags |= (8 | 4);
     originalRegisterResourceInfosHook(pDocument, resInfo, alloc);
 }
 
