@@ -214,13 +214,13 @@ namespace app::mp
 		}
 
 		auto* pShape = pCollider->FindColliShape(spMsg->hitShape);
-		if (pShape)
+		if (pShape && pShape->IsEnable())
 		{
 			MsgHitEventCollisionMP hitMsg{ pShape, m_pCollider->GetShape() };
 
 			hitMsg.m_Sender = GetID();
 
-			objHandle->SendMessage(hitMsg);
+			SendMessageImm(objHandle->GetID(), hitMsg);
 		}
 
 		return true;
@@ -250,9 +250,13 @@ namespace app::mp
 		}
 		auto* pShape = pCollider->GetShape();
 
-		const xgame::MsgKick::Description kickDesc{ m_pCollider->GetShape(), pShape };
-		auto msgKick = MsgKickMP{ 0, kickDesc, m_pTransform->GetLocalPosition() };
-		ObjUtil::SendMessageImmToSetObject(*this, spMsg->kickedObject, msgKick, true);
+		if (pShape && pShape->IsEnable())
+		{
+			const xgame::MsgKick::Description kickDesc{ m_pCollider->GetShape(), pShape };
+			auto msgKick = MsgKickMP{ 0, kickDesc, m_pTransform->GetLocalPosition() };
+			ObjUtil::SendMessageImmToSetObject(*this, spMsg->kickedObject, msgKick, true);
+		}
+		
 		return true;
 	}
 
