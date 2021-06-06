@@ -134,3 +134,10 @@ struct MsgStartStage : Message
 
     DEFINE_MESSAGE_INFO()
 };
+
+struct MsgFinishStage : Message
+{
+    uint8_t dummy;
+
+    DEFINE_MESSAGE_INFO()
+};

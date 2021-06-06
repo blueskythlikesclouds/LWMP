@@ -3,6 +3,7 @@
 #include "Messages.h"
 #include "MPMessages.h"
 #include "MultiplayerManager.h"
+#include "MultiplayerService.h"
 
 namespace app::mp
 {
@@ -19,6 +20,21 @@ namespace app::mp
 		return handled;
 	}
 
+	HOOK(bool, __fastcall, CGamePreProcessMessageHook, ASLR(0x004AC1B0), fnd::CActor* pThis, void* edx, fnd::Message& msg)
+	{
+		const auto result = originalCGamePreProcessMessageHook(pThis, edx, msg);
+
+		if (msg.IsOfType<xgame::MsgGoal>() && !MPUtil::IsMpVariant(reinterpret_cast<xgame::MsgGoal&>(msg)) && GameDocument::GetSingleton())
+		{
+			auto* pDoc = GameDocument::GetSingleton();
+			auto* pService = pDoc->GetService<MultiplayerService>();
+			if (pService)
+				pService->GoalReached();
+		}
+		
+		return result;
+	}
+	
 	bool HookedObject::ActorProcHooked(int id, void* data)
 	{
 		switch (id)
@@ -101,5 +117,6 @@ namespace app::mp
 	void EventHooks::Init()
 	{
 		INSTALL_HOOK(GameObjectActorProcHook);
+		INSTALL_HOOK(CGamePreProcessMessageHook);
 	}
 }

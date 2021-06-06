@@ -5,6 +5,7 @@
 #include "MultiplayerManager.h"
 #include "MultiplayerSonic.h"
 #include "MessageData.h"
+#include "MPMessages.h"
 #include "Messages.h"
 #include "Window.h"
 
@@ -38,6 +39,7 @@ namespace app::mp
 	
 	void MultiplayerService::StartGame(bool a1)
 	{
+		m_LevelFinished = false;
 		if (!a1)
 			return;
 
@@ -54,6 +56,15 @@ namespace app::mp
 			m_pOwnerDocument->AddGameObject(pSonic);
 			m_PlayersData[i + 1] = dummyData;
 		}
+	}
+
+	void MultiplayerService::GoalReached()
+	{
+		if (m_LevelFinished)
+			return;
+		
+		m_LevelFinished = true;
+		m_pMuliplayerManager->GetSession()->sendMessage(m_pMuliplayerManager->AllocateMessage<MsgFinishStage>());
 	}
 
 	void MultiplayerService::Load()
@@ -120,6 +131,14 @@ namespace app::mp
 		{
 			xgame::MsgDamage msgDamage{ 3, 8, 1, m_SonicHandle->GetComponent<fnd::GOCTransform>()->GetLocalPosition(), {0, 0, 0} };
 			m_SonicHandle->SendMessage(msgDamage);
+		}
+		else if (message.isOfType<MsgFinishStage>() && !m_LevelFinished)
+		{
+			m_LevelFinished = true;
+			Window::appear(L"You lost!", 1);
+			
+			MsgGoalMP goalMsg{};
+			SendMessageImmToGame(goalMsg);
 		}
 		
 		return false;

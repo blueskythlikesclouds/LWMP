@@ -45,6 +45,17 @@ namespace app::mp
 			
 		}
 	};
+
+	class MsgGoalMP : public xgame::MsgGoal, MPObjHeader
+	{
+	public:
+		inline static uint MessageID = MsgGoal::MessageID;
+
+		MsgGoalMP() : MsgGoal()
+		{
+
+		}
+	};
 	
 	class MsgIsLWMPObject : public fnd::Message
 	{

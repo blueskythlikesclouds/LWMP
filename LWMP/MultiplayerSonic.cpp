@@ -17,6 +17,7 @@ namespace app::mp
 
 	void MultiplayerSonic::AddCallback(GameDocument& document)
 	{
+		auto grp = document.GetGroupActorID(1);
 		m_pSetMan = document.GetService<CSetObjectManager>();
 		m_pPhysics = new(GetAllocator()) CPhysicsStub();
 		m_pBlackboard = new(GetAllocator()) CBlackBoard();

@@ -12,6 +12,7 @@ namespace app::mp
 	protected:
 		MultiplayerManager* m_pMuliplayerManager{};
 		CLevelInfo* m_pLevelInfo{};
+		bool m_LevelFinished{};
 		GameObjectHandle<MultiplayerSonic> m_SonicHandle; // Pretend this is CPlayer
 		csl::ut::InplaceMoveArray<MultiplayerSonic*, 2> m_Players{ GetAllocator() };
 		csl::ut::InplaceObjectMoveArray<PlayerData, 2> m_PlayersData{ GetAllocator() };
@@ -43,6 +44,7 @@ namespace app::mp
 			m_pLevelInfo = nullptr;
 		}
 
+		void GoalReached();
 		const PlayerData* GetPlayerData(size_t player)
 		{
 			return &m_PlayersData[player];
