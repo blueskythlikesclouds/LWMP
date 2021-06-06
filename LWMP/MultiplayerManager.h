@@ -51,6 +51,9 @@ namespace app::mp
 		{
 			m_spSession->postUpdate();
 		}
+
+	protected:
+		void OnDisconnected(Session* pSender, bool timedOut);
 	};
 
 	template <typename T>

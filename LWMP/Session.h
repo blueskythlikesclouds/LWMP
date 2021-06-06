@@ -26,9 +26,10 @@ class Session
     std::shared_ptr<Socket> socket;
     Address remoteAddress;
 	
-    double timeout{5};
+    double timeout{ 5 };
     bool isConnected{};
     bool timedOut{};
+    bool disconnectRaised{ true };
     size_t playerNum{};
 
     std::shared_ptr<MemoryPool> pool;
@@ -45,6 +46,7 @@ class Session
     void createHandlers();
 
 public:
+    csl::fnd::Delegate<void(Session* pSender, bool timedOut)> onDisconnected;
     Session();
     ~Session();
 

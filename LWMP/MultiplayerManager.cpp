@@ -4,10 +4,8 @@
 #include "MemoryPool.h"
 #include "MessageData.h"
 #include "MessageRequest.h"
-#include "MPMessages.h"
-#include "MPUtil.h"
 #include "MultiplayerService.h"
-#include "MultiplayerSonic.h"
+#include "Window.h"
 
 #undef CreateService
 #undef SendMessage
@@ -66,7 +64,8 @@ namespace app::mp
             m_spSession->requestMessage<MsgHandleConnectRequest>(address);
         }
         m_spSession->addListener(*this);
-
+        m_spSession->onDisconnected += MakePair(this, &MultiplayerManager::OnDisconnected);
+		
         xgame::MsgNotifyObjectEvent event{0};
         SendMessage(GetID(), event);
 	}
@@ -120,6 +119,7 @@ namespace app::mp
 	{
 		if (message.isOfType<MsgDisconnect>())
 		{
+            Window::appear(L"The remote player has left. :(");
             DEBUG_PRINT("Recieved disconnection message.\n");
             m_DisconnectedCallback(m_PlayerCount);
             m_PlayerCount--;
@@ -160,7 +160,14 @@ namespace app::mp
 		
         return false;
 	}
-	
+
+	void MultiplayerManager::OnDisconnected(Session* pSender, bool timedOut)
+	{
+        DEBUG_PRINT("Recieved disconnection message.\n");
+        m_DisconnectedCallback(m_PlayerCount);
+        m_PlayerCount--;
+	}
+
 	void* MultiplayerManager::MultiplayerManager_init()
     {
         INSTALL_HOOK(GameModeStageInitFirstHook);

@@ -6,7 +6,7 @@
 #include "MultiplayerSonic.h"
 #include "MessageData.h"
 #include "Messages.h"
-#include "MPUtil.h"
+#include "Window.h"
 
 namespace app::mp
 {
@@ -79,6 +79,7 @@ namespace app::mp
 	{
 		m_Players[playerNum - 1]->Kill();
 		m_Players.remove(playerNum - 1);
+		Window::appear(L"The remote player has left. :(", 1);
 	}
 
 	bool MultiplayerService::OnMessageReceived(const MessageData& message)

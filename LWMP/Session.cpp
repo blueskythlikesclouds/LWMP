@@ -104,6 +104,17 @@ void Session::postUpdate()
     messageSender->update();
     isConnected = socket->isConnected();
     timedOut = !isConnected;
+
+	if (!isConnected && !disconnectRaised)
+	{
+        remoteAddress.port = 0;
+        disconnectRaised = true;
+        onDisconnected(this, timedOut);
+	}
+    else if (isConnected && remoteAddress.port)
+    {
+        disconnectRaised = false;
+    }
 }
 
 const std::shared_ptr<Socket>& Session::getSocket() const
