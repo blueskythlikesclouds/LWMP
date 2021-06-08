@@ -17,7 +17,6 @@ namespace app::mp
 
 	void MultiplayerSonic::AddCallback(GameDocument& document)
 	{
-		auto grp = document.GetGroupActorID(1);
 		m_pSetMan = document.GetService<CSetObjectManager>();
 		m_pPhysics = new(GetAllocator()) CPhysicsStub();
 		m_pBlackboard = new(GetAllocator()) CBlackBoard();
@@ -32,15 +31,17 @@ namespace app::mp
 			return;
 
 		m_pCollider = GOComponent::Create<game::GOCCollider>(*this);
+		GOComponent::Create<game::GOCSound>(*this);
 		GOComponent::Create<GOCVisualContainer>(*this);
-		GOComponent::Create<game::GOCAnimationContainer>(*this);
 		GOComponent::Create<game::GOCIKConstraint>(*this);
+		GOComponent::Create<game::GOCAnimationContainer>(*this);
 
 		auto* pCollector = GOComponent::Create<Player::GOCCollector>(*this);
 		auto* pShadow = GOComponent::Create<Player::GOCPlayerShadow>(*this);
 
 		GOComponent::BeginSetup(*this);
 
+		game::GOCSound::SimpleSetup(this, 4, 4);
 		m_pVisual = new(GetAllocator()) Player::CVisualGOC(this);
 		Player::CEffectGOC* pEffect = new(GetAllocator()) Player::CEffectGOC(this, m_pVisual);
 
@@ -57,7 +58,7 @@ namespace app::mp
 		m_pVisual->Initialize(visInfo);
 		pEffect->Initialize();
 
-		const game::GOCCollider::Description colDesc{ 1 };
+		const game::GOCCollider::Description colDesc{ 2 };
 		m_pCollider->Setup(colDesc);
 
 		game::ColliCapsuleShapeCInfo shapeCapsule{};
@@ -68,6 +69,10 @@ namespace app::mp
 		shapeCapsule.m_Flags = 2;
 		shapeCapsule.m_Unk3 = 0x00020000;
 		shapeCapsule.m_Unk7 = 0x12;
+		m_pCollider->CreateShape(shapeCapsule);
+
+		shapeCapsule.m_ShapeID = 0;
+		shapeCapsule.m_Unk3 = 0x00030000;
 		m_pCollider->CreateShape(shapeCapsule);
 		
 		csl::fnd::Singleton<MultiplayerManager>::GetInstance()->GetSession()->addListener(*this);

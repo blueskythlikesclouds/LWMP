@@ -62,6 +62,7 @@ namespace app::mp
 			ASSERT_OFFSETOF(MultiplayerSonic, m_pBlackboard, 0x348);
 
 			SetProperty(0x4002, 9);
+			SetProperty(0x4003, 1);
 			
 			SetUpdateFlag(0, true);
 			SetUpdateFlag(1, true);

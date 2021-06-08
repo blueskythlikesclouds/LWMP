@@ -71,7 +71,8 @@ void Session::preUpdate()
             for (size_t i = 0; i < listeners.size(); i++)
             {
 	            auto listener = listeners[i];
-                listener->OnMessageRequested(request);
+                if (listener->OnMessageRequested(request))
+                    break;
             }
         }
 
@@ -80,7 +81,8 @@ void Session::preUpdate()
             for (size_t i = 0; i < listeners.size(); i++)
             {
                 auto listener = listeners[i];
-                listener->OnMessageReceived(message);
+                if (listener->OnMessageReceived(message))
+                    break;
             }
     	}
     }
