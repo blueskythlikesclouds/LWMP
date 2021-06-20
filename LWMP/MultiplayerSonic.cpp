@@ -206,7 +206,6 @@ namespace app::mp
 
 	bool MultiplayerSonic::ProcMsgHitEvent(const std::shared_ptr<MsgHitEvent> spMsg) const
 	{
-		auto handle = ObjUtil::CreateSetObject(*m_pOwnerDocument, spMsg->hitObject);
 		const auto objHandle = ObjUtil::GetGameObjectHandle(*m_pOwnerDocument, spMsg->hitObject, spMsg->hitUnit);
 
 		if (!objHandle)
