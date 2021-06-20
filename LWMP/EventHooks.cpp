@@ -92,6 +92,7 @@ namespace app::mp
 				&& m_pOwnerDocument->GetService<CLevelInfo>()->GetPlayerID(0) == rHitEvent.m_Sender
 				&& MPUtil::IsObjectAllowed(GetAdapter()->GetObjectResource()))
 			{
+				DEBUG_PRINT("Relaying hit event from %s, hash: %X\n", GetAdapter()->GetObjectResource().GetName(), GetAdapter()->GetObjectResource().GetClassHash());
 				const auto spMsg = mpMan->AllocateMessage<MsgHitEvent>();
 				spMsg->hitObject = GetAdapter()->GetObjectResource().GetUID();
 				spMsg->hitUnit = GetAdapter()->GetActor()->GetUnitNum();
