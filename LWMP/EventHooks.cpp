@@ -88,7 +88,9 @@ namespace app::mp
 		{
 			auto& rHitEvent = reinterpret_cast<xgame::MsgHitEventCollision&>(msg);
 			
-			if (!MPUtil::IsMpVariant(rHitEvent) && m_pOwnerDocument->GetService<CLevelInfo>()->GetPlayerID(0) == rHitEvent.m_Sender)
+			if (!MPUtil::IsMpVariant(rHitEvent) 
+				&& m_pOwnerDocument->GetService<CLevelInfo>()->GetPlayerID(0) == rHitEvent.m_Sender
+				&& MPUtil::IsObjectAllowed(GetAdapter()->GetObjectResource()))
 			{
 				const auto spMsg = mpMan->AllocateMessage<MsgHitEvent>();
 				spMsg->hitObject = GetAdapter()->GetObjectResource().GetUID();

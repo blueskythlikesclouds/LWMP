@@ -35,6 +35,7 @@ namespace app::mp
 	{
         Singleton<fnd::MessageManager>::GetInstance()->Add(this);
 		Singleton<fnd::GameServiceTypeRegistry>::GetInstance()->AddService(MultiplayerService::staticClass());
+
         m_spSession = std::make_shared<Session>();
         Address address = Address::fromHostName("localhost", 42069);
 
