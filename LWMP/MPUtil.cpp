@@ -17,6 +17,9 @@ namespace app::mp
 		{ 0x771D7DCD, true }, // CameraCollisionCylinder
 		{ 0x17E9EE73, true }, // HintCollision
 		{ 0x957118CA, true }, // DashPanel
+		{ 0xB959EE81, true }, // PanCamera
+		{ 0x90ABF363, true }, // ParallelCamera
+		{ 0x4F4A4447, true }, // CylindricalOuterCamera
 	};
 	
 	bool MPUtil::IsMpVariantImpl(void* pObj, size_t objSize)

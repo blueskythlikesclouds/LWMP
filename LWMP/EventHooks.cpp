@@ -105,8 +105,10 @@ namespace app::mp
 		else if (msg.IsOfType<xgame::MsgNotifyObjectEvent>())
 		{
 			auto& rNotifyEvent = reinterpret_cast<xgame::MsgNotifyObjectEvent&>(msg);
-			if (!MPUtil::IsMpVariant(rNotifyEvent))
+			if (!MPUtil::IsMpVariant(rNotifyEvent) 
+				&& MPUtil::IsObjectAllowed(GetAdapter()->GetObjectResource()))
 			{
+				DEBUG_PRINT("Relaying object event from %s, hash: %X\n", GetAdapter()->GetObjectResource().GetName(), GetAdapter()->GetObjectResource().GetClassHash());
 				const auto spMsg = mpMan->AllocateMessage<MsgNotifyObjectEvent>();
 				spMsg->notifiedObject = GetAdapter()->GetObjectResource().GetUID();
 				spMsg->event = rNotifyEvent.GetEventType();
